@@ -6,8 +6,8 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>bb8a0d5d-8736-425e-a920-d0e459450984</ProjectGuid>
-    <RootNamespace>Template.Data.Mock</RootNamespace>
+    <ProjectGuid>a62b68ce-dbf3-4863-bdb6-36dff8274ead</ProjectGuid>
+    <RootNamespace>Template.Angular</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
