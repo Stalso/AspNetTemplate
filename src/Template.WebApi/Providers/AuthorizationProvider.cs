@@ -14,12 +14,7 @@ using Newtonsoft.Json.Schema;
 
 namespace Template.WebApi.Providers {
     public sealed class AuthorizationProvider : OpenIdConnectServerProvider {
-        
-        //public override async Task OnValidateAuthorizationRequest(ValidateAuthorizationRequestContext context)
-        //{
-        //    context.Validate();
-        //    return Task.FromResult(0);
-        //}
+      
         public override async Task ValidateClientAuthentication(ValidateClientAuthenticationContext context) {
             // Note: client authentication is not mandatory for non-confidential client applications like mobile apps
             // (except when using the client credentials grant type) but this authorization server uses a safer policy
