@@ -14,6 +14,13 @@ using Template.WebApi.Providers;
 using Template.WebApi.Models;
 using Microsoft.Data.Entity;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Authentication.JwtBearer;
+using System.Security.Claims;
+using Microsoft.AspNet.Authentication;
+using Microsoft.AspNet.Http.Authentication;
+using AspNet.Security.OpenIdConnect.Server;
 
 namespace Template.WebApi
 {
@@ -35,12 +42,23 @@ namespace Template.WebApi
         {
             services.AddEntityFramework()
                .AddInMemoryDatabase()
-               .AddDbContext<ApplicationContext>(options => {
+               .AddDbContext<ApplicationDbContext>(options => {
                    options.UseInMemoryDatabase();
                });
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                options.Password = new PasswordOptions()
+                {
+                    RequiredLength = 1,
+                    RequireDigit = false,
+                    RequireLowercase = false,
+                    RequireUppercase = false,
+                    RequireNonLetterOrDigit = false
 
-            services.AddAuthentication();
+                };
+            }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+          
             // Add framework services.
+            services.AddCaching();
             services.AddMvc();
         }
 
@@ -51,12 +69,14 @@ namespace Template.WebApi
             loggerFactory.AddDebug();
 
             app.UseIISPlatformHandler();
-
+            app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
 
             // Create a new branch where the registered middleware will be executed only for API calls.
-            app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api")), branch => {
-                branch.UseJwtBearerAuthentication(options => {
+            app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api")), branch =>
+            {
+                branch.UseJwtBearerAuthentication(options =>
+                {
                     options.AutomaticAuthenticate = true;
                     options.AutomaticChallenge = true;
                     options.RequireHttpsMetadata = false;
@@ -79,38 +99,63 @@ namespace Template.WebApi
 
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
 
-            app.UseOpenIdConnectServer(options => {
+            app.UseOpenIdConnectServer(options =>
+            {
                 options.Provider = new AuthorizationProvider();
 
                 // Note: see AuthorizationController.cs for more
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
                 options.AllowInsecureHttp = true;
-
+                options.AuthorizationEndpointPath = PathString.Empty;
+                options.TokenEndpointPath = "/token";
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:
                 // options.SigningCredentials.AddCertificate(certificate);
             });
-
+            app.UseIdentity();
             app.UseMvc();
 
-            app.UseWelcomePage();
+            //app.UseWelcomePage();
 
-            using (var database = app.ApplicationServices.GetService<ApplicationContext>())
+            using (var database = app.ApplicationServices.GetService<ApplicationDbContext>())
             {
                 database.Applications.Add(new Application
                 {
                     ApplicationID = "myClient",
                     DisplayName = "My client application",
-                    RedirectUri = "http://localhost:53507/signin-oidc",
-                    LogoutRedirectUri = "http://localhost:53507/",
+                    RedirectUri = "http://localhost:10450/signin-oidc",
+                    LogoutRedirectUri = "http://localhost:10450/",
                     Secret = "secret_secret_secret"
+                });
+                database.Users.Add(new ApplicationUser
+                {
+                    UserName = "admin",
+                    PasswordHash = "admin"
                 });
 
                 database.SaveChanges();
+                CreateUser(app).Wait();
+
+            }
+          
+
+
+        }
+        public async Task CreateUser(IApplicationBuilder app)
+        {
+            try
+            {
+                var user = new ApplicationUser { UserName = "admin" };
+                var userManager = app.ApplicationServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var result = await userManager.CreateAsync(user, "admin");
+            }
+            catch (Exception ex)
+            {
+
             }
         }
-
         // Entry point for the application.
         public static void Main(string[] args) => Microsoft.AspNet.Hosting.WebApplication.Run<Startup>(args);
     }
