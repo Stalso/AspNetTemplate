@@ -15,5 +15,7 @@ namespace OpenIddict
         Task<string> GetDisplayNameAsync(TApplication application, CancellationToken cancellationToken);
         Task<string> GetRedirectUriAsync(TApplication application, CancellationToken cancellationToken);
         Task<string> GetHashedSecretAsync(TApplication application, CancellationToken cancellationToken);
+        //TODO Remove in rc2
+        Task<string> GetNotHashedSecretAsync(TApplication application, CancellationToken cancellationToken);
     }
 }

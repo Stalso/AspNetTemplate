@@ -21,6 +21,8 @@ using System.Security.Claims;
 using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Http.Authentication;
 using AspNet.Security.OpenIdConnect.Server;
+using OpenIddict.Core;
+using OpenIddict.Models;
 
 namespace Template.WebApi
 {
@@ -45,7 +47,8 @@ namespace Template.WebApi
                .AddDbContext<ApplicationDbContext>(options => {
                    options.UseInMemoryDatabase();
                });
-            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
                 options.Password = new PasswordOptions()
                 {
                     RequiredLength = 1,
@@ -99,10 +102,15 @@ namespace Template.WebApi
 
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
 
+
+           
+
             app.UseOpenIdConnectServer(options =>
             {
+                //Oldprovider
                 options.Provider = new AuthorizationProvider();
-
+                //OpenIddictProvider<IdentityUser, Application> prov = new OpenIddictProvider<IdentityUser, Application>();
+                //options.Provider = app.ApplicationServices.GetRequiredService<IOpenIdConnectServerProvider>();
                 // Note: see AuthorizationController.cs for more
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
@@ -120,19 +128,41 @@ namespace Template.WebApi
 
             using (var database = app.ApplicationServices.GetService<ApplicationDbContext>())
             {
-                database.Applications.Add(new Application
+                //database.Applications.Add(new TempApplication
+                //{
+                //    ApplicationID = "myClient",
+                //    DisplayName = "My client application",
+                //    RedirectUri = "http://localhost:10450/signin-oidc",
+                //    LogoutRedirectUri = "http://localhost:10450/",
+                //    Secret = "secret_secret_secret"
+                //});
+
+                //var hasher = new PasswordHasher<Application>();
+
+                //database.Applications.Add(new Application
+                //{
+                //    Id = "myClient",
+                //    DisplayName = "My client application",
+                //    RedirectUri = "http://localhost:10450/signin-oidc",
+                //    LogoutRedirectUri = "http://localhost:10450/",
+                //    Secret = hasher.HashPassword(null, "secret_secret_secret"),
+                //    Type = OpenIddict.OpenIddictLocalConstants.ApplicationTypes.Confidential
+                //});
+
+
+                database.Applications.Add(new OpenIddict.Models.Application
                 {
-                    ApplicationID = "myClient",
+                    Id = "myClient",
                     DisplayName = "My client application",
                     RedirectUri = "http://localhost:10450/signin-oidc",
                     LogoutRedirectUri = "http://localhost:10450/",
                     Secret = "secret_secret_secret"
                 });
-                database.Users.Add(new ApplicationUser
-                {
-                    UserName = "admin",
-                    PasswordHash = "admin"
-                });
+                //database.Users.Add(new ApplicationUser
+                //{
+                //    UserName = "admin",
+                //    PasswordHash = "admin"
+                //});
 
                 database.SaveChanges();
                 CreateUser(app).Wait();

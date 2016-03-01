@@ -35,7 +35,7 @@ namespace Template.WebApi.Providers {
 
             // Retrieve the application details corresponding to the requested client_id.
             var application = await (from entity in database.Applications
-                                     where entity.ApplicationID == context.ClientId
+                                     where entity.Id == context.ClientId
                                      select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
 
             if (application == null) {
@@ -57,12 +57,13 @@ namespace Template.WebApi.Providers {
             context.Validated();
         }
 
+        
         public override async Task ValidateClientRedirectUri(ValidateClientRedirectUriContext context) {
             var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
 
             // Retrieve the application details corresponding to the requested client_id.
             var application = await (from entity in database.Applications
-                                     where entity.ApplicationID == context.ClientId
+                                     where entity.Id == context.ClientId
                                      select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
 
             if (application == null) {
@@ -86,7 +87,7 @@ namespace Template.WebApi.Providers {
 
         public override async Task ValidateClientLogoutRedirectUri(ValidateClientLogoutRedirectUriContext context) {
             var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
-
+            
             // Note: ValidateClientLogoutRedirectUri is not invoked when post_logout_redirect_uri is null.
             // When provided, post_logout_redirect_uri must exactly match the address registered by the client application.
             if (!await database.Applications.AnyAsync(application => application.LogoutRedirectUri == context.PostLogoutRedirectUri)) {

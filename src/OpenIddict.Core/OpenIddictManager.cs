@@ -109,7 +109,7 @@ namespace OpenIddict
                     OpenIdConnectLocalConstants.Destinations.IdentityToken);
             }
 
-            if (SupportsUserRole && scopes.Contains(OpenIddictConstants.Scopes.Roles))
+            if (SupportsUserRole && scopes.Contains(OpenIddictLocalConstants.Scopes.Roles))
             {
                 foreach (var role in await GetRolesAsync(user))
                 {
@@ -174,8 +174,8 @@ namespace OpenIddict
             var type = await Store.GetApplicationTypeAsync(application, CancellationToken);
 
             // Ensure the application type returned by the store is supported by the manager.
-            if (!string.Equals(type, OpenIddictConstants.ApplicationTypes.Confidential, StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(type, OpenIddictConstants.ApplicationTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(type, OpenIddictLocalConstants.ApplicationTypes.Confidential, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(type, OpenIddictLocalConstants.ApplicationTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("Only 'confidential' or 'public' applications are " +
                                                     "supported by the default OpenIddict manager.");

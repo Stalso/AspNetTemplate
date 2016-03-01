@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OpenIddict
 {
-    public static class OpenIddictConstants
+    public static class OpenIddictLocalConstants
     {
         public static class ApplicationTypes
         {
