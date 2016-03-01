@@ -11,32 +11,39 @@ using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Http.Authentication;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Schema;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Template.WebApi.Providers {
     public sealed class AuthorizationProvider : OpenIdConnectServerProvider {
       
         public override async Task ValidateClientAuthentication(ValidateClientAuthenticationContext context) {
+
             // Note: client authentication is not mandatory for non-confidential client applications like mobile apps
             // (except when using the client credentials grant type) but this authorization server uses a safer policy
             // that makes client authentication mandatory and returns an error if client_id or client_secret is missing.
             // You may consider relaxing it to support the resource owner password credentials grant type
             // with JavaScript or desktop applications, where client credentials cannot be safely stored.
             // In this case, call context.Skipped() to inform the server middleware the client is not trusted.
-            if (string.IsNullOrEmpty(context.ClientId) || string.IsNullOrEmpty(context.ClientSecret)) {
+            if (string.IsNullOrEmpty(context.ClientId))
+            {
                 context.Rejected(
                     error: "invalid_request",
-                    description: "Missing credentials: ensure that your credentials were correctly " +
-                                 "flowed in the request body or in the authorization header");
+                    description: "No client_id");
 
                 return;
             }
 
-            var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
+            //var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext<ApplicationUser,Application,IdentityRole,string>>();
+
+            //// Retrieve the application details corresponding to the requested client_id.
+            //var application = await (from entity in database.Applications
+            //                         where entity.Id == context.ClientId
+            //                         select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+
+            var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
 
             // Retrieve the application details corresponding to the requested client_id.
-            var application = await (from entity in database.Applications
-                                     where entity.Id == context.ClientId
-                                     select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+            var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
 
             if (application == null) {
                 context.Rejected(
@@ -46,7 +53,23 @@ namespace Template.WebApi.Providers {
                 return;
             }
 
-            if (!string.Equals(context.ClientSecret, application.Secret, StringComparison.Ordinal)) {
+            // Note: client authentication is not mandatory for non-confidential client applications like mobile apps
+            // (except when using the client credentials grant type) but this authorization server uses a safer policy
+            // that makes client authentication mandatory and returns an error if client_id or client_secret is missing.
+            // You may consider relaxing it to support the resource owner password credentials grant type
+            // with JavaScript or desktop applications, where client credentials cannot be safely stored.
+            // In this case, call context.Skipped() to inform the server middleware the client is not trusted.
+            if (application.Type == ApplicationTypes.Confidential && (string.IsNullOrEmpty(context.ClientSecret)))
+            {
+                context.Rejected(
+                    error: "invalid_request",
+                    description: "Missing credentials: ensure that your credentials were correctly " +
+                                 "flowed in the request body or in the authorization header");
+
+                return;
+            }
+
+            if (application.Type == ApplicationTypes.Confidential &&  !string.Equals(context.ClientSecret, application.Secret, StringComparison.Ordinal)) {
                 context.Rejected(
                     error: "invalid_client",
                     description: "Invalid credentials: ensure that you specified a correct client_secret");
@@ -59,12 +82,17 @@ namespace Template.WebApi.Providers {
 
         
         public override async Task ValidateClientRedirectUri(ValidateClientRedirectUriContext context) {
-            var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
+            //var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>();
+
+            //// Retrieve the application details corresponding to the requested client_id.
+            //var application = await (from entity in database.Applications
+            //                         where entity.Id == context.ClientId
+            //                         select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+
+            var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
 
             // Retrieve the application details corresponding to the requested client_id.
-            var application = await (from entity in database.Applications
-                                     where entity.Id == context.ClientId
-                                     select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+            var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
 
             if (application == null) {
                 context.Rejected(
@@ -86,11 +114,23 @@ namespace Template.WebApi.Providers {
         }
 
         public override async Task ValidateClientLogoutRedirectUri(ValidateClientLogoutRedirectUriContext context) {
-            var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
-            
-            // Note: ValidateClientLogoutRedirectUri is not invoked when post_logout_redirect_uri is null.
-            // When provided, post_logout_redirect_uri must exactly match the address registered by the client application.
-            if (!await database.Applications.AnyAsync(application => application.LogoutRedirectUri == context.PostLogoutRedirectUri)) {
+            //var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>();
+
+            //// Note: ValidateClientLogoutRedirectUri is not invoked when post_logout_redirect_uri is null.
+            //// When provided, post_logout_redirect_uri must exactly match the address registered by the client application.
+            //if (!await database.Applications.AnyAsync(application => application.LogoutRedirectUri == context.PostLogoutRedirectUri)) {
+            //    context.Rejected(error: "invalid_client", description: "Invalid post_logout_redirect_uri");
+
+            //    return;
+            //}
+
+            var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
+
+            // Retrieve the application details corresponding to the requested client_id.
+            var application = await database.FindApplicationByLogoutRedirectUri(context.PostLogoutRedirectUri, context.HttpContext.RequestAborted);
+
+            if (application == null)
+            {
                 context.Rejected(error: "invalid_client", description: "Invalid post_logout_redirect_uri");
 
                 return;

@@ -21,8 +21,6 @@ using System.Security.Claims;
 using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Http.Authentication;
 using AspNet.Security.OpenIdConnect.Server;
-using OpenIddict.Core;
-using OpenIddict.Models;
 
 namespace Template.WebApi
 {
@@ -44,9 +42,11 @@ namespace Template.WebApi
         {
             services.AddEntityFramework()
                .AddInMemoryDatabase()
-               .AddDbContext<ApplicationDbContext>(options => {
+               .AddDbContext<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>(options => {
                    options.UseInMemoryDatabase();
                });
+            services.AddScoped<IAuthStore<ApplicationUser,Application>, AuthStore<ApplicationUser, Application, IdentityRole, 
+                ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>, string>>();
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password = new PasswordOptions()
@@ -58,8 +58,7 @@ namespace Template.WebApi
                     RequireNonLetterOrDigit = false
 
                 };
-            }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-          
+            }).AddEntityFrameworkStores<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>().AddDefaultTokenProviders();
             // Add framework services.
             services.AddCaching();
             services.AddMvc();
@@ -84,11 +83,12 @@ namespace Template.WebApi
                     options.AutomaticChallenge = true;
                     options.RequireHttpsMetadata = false;
 
-                    options.Audience = "http://localhost:10450/";
+                    //options.Audience = "http://localhost:10450/";
                     options.Authority = "http://localhost:10450/";
                 });
             });
 
+            app.UseIdentity();
 
             // Note: visit https://docs.nwebsec.com/en/4.2/nwebsec/Configuring-csp.html for more information.
             app.UseCsp(options => options.DefaultSources(configuration => configuration.Self())
@@ -102,15 +102,10 @@ namespace Template.WebApi
 
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
 
-
-           
-
             app.UseOpenIdConnectServer(options =>
             {
-                //Oldprovider
+                
                 options.Provider = new AuthorizationProvider();
-                //OpenIddictProvider<IdentityUser, Application> prov = new OpenIddictProvider<IdentityUser, Application>();
-                //options.Provider = app.ApplicationServices.GetRequiredService<IOpenIdConnectServerProvider>();
                 // Note: see AuthorizationController.cs for more
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
@@ -121,56 +116,31 @@ namespace Template.WebApi
                 // RSA keys but you can also use your own certificate:
                 // options.SigningCredentials.AddCertificate(certificate);
             });
-            app.UseIdentity();
+           
             app.UseMvc();
 
-            //app.UseWelcomePage();
-
-            using (var database = app.ApplicationServices.GetService<ApplicationDbContext>())
-            {
-                //database.Applications.Add(new TempApplication
-                //{
-                //    ApplicationID = "myClient",
-                //    DisplayName = "My client application",
-                //    RedirectUri = "http://localhost:10450/signin-oidc",
-                //    LogoutRedirectUri = "http://localhost:10450/",
-                //    Secret = "secret_secret_secret"
-                //});
-
-                //var hasher = new PasswordHasher<Application>();
-
-                //database.Applications.Add(new Application
-                //{
-                //    Id = "myClient",
-                //    DisplayName = "My client application",
-                //    RedirectUri = "http://localhost:10450/signin-oidc",
-                //    LogoutRedirectUri = "http://localhost:10450/",
-                //    Secret = hasher.HashPassword(null, "secret_secret_secret"),
-                //    Type = OpenIddict.OpenIddictLocalConstants.ApplicationTypes.Confidential
-                //});
-
-
-                database.Applications.Add(new OpenIddict.Models.Application
+            using (var database = app.ApplicationServices.GetService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>())
+            {              
+                database.Applications.Add(new Application
                 {
-                    Id = "myClient",
+                    Id = "myPublicClient",
                     DisplayName = "My client application",
-                    RedirectUri = "http://localhost:10450/signin-oidc",
-                    LogoutRedirectUri = "http://localhost:10450/",
-                    Secret = "secret_secret_secret"
+                    Type = ApplicationTypes.Public
                 });
-                //database.Users.Add(new ApplicationUser
-                //{
-                //    UserName = "admin",
-                //    PasswordHash = "admin"
-                //});
+                database.Applications.Add(new Application
+                {
+                    Id = "myConfidentialClient",
+                    DisplayName = "My client application",
+                    //RedirectUri = "http://localhost:10450/signin-oidc",
+                    //LogoutRedirectUri = "http://localhost:10450/",
+                    Secret = "secret_secret_secret",                    
+                    Type = ApplicationTypes.Confidential
+                });
+
 
                 database.SaveChanges();
                 CreateUser(app).Wait();
-
-            }
-          
-
-
+            }        
         }
         public async Task CreateUser(IApplicationBuilder app)
         {
