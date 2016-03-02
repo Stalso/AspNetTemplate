@@ -76,6 +76,7 @@ namespace Template.WebApi
             app.UseStaticFiles();
 
             // Create a new branch where the registered middleware will be executed only for API calls.
+            
             app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api")), branch =>
             {
                 branch.UseJwtBearerAuthentication(options =>
@@ -83,9 +84,13 @@ namespace Template.WebApi
                     options.AutomaticAuthenticate = true;
                     options.AutomaticChallenge = true;
                     options.RequireHttpsMetadata = false;
-
-                    //options.Audience = "http://localhost:10450/";
+                    options.Audience = "http://localhost:10450/";
+                    //options.Audience = null;
                     options.Authority = "http://localhost:10450/";
+                    //(options.Events as JwtBearerEvents).OnValidatedToken += context1 =>
+                    //{
+                    //    return Task.FromResult(true);
+                    //};
                 });
             });
 

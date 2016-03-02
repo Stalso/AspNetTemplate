@@ -341,7 +341,8 @@ namespace Template.WebApi.Providers {
                new AuthenticationProperties(),
                context.Options.AuthenticationScheme);
 
-            ticket.SetResources(context.Request.GetResources());
+            //ticket.SetResources(context.Request.GetResources());
+            ticket.SetResources(new[] { "http://localhost:10450/" });
             ticket.SetScopes(context.Request.GetScopes());
 
             context.Validated(ticket);
@@ -394,6 +395,7 @@ namespace Template.WebApi.Providers {
             var identity = await manager.CreateIdentityAsync(user, context.AuthenticationTicket.GetScopes());
 
 
+
             // Create a new authentication ticket holding the user identity but
             // reuse the authentication properties stored in the refresh token.
             // TODO uncommecnt with rc2
@@ -405,9 +407,10 @@ namespace Template.WebApi.Providers {
                new ClaimsPrincipal(identity),
                context.AuthenticationTicket.Properties,
                context.Options.AuthenticationScheme);
-
+            ticket.SetResources(new[] { "http://localhost:10450/" });
             context.Validated(ticket);
         }
+
 
         #region OldGrants
         public async Task GrantResourceOwnerCredentialsOld1(GrantResourceOwnerCredentialsContext context)
@@ -458,7 +461,7 @@ namespace Template.WebApi.Providers {
             context.Validated(ticket);
             //OpenIdConnectConstants.Scopes
         }
-        public async Task GrantResourceOwnerCredentialsOld(GrantResourceOwnerCredentialsContext context)
+        public  async Task GrantResourceOwnerCredentials12(GrantResourceOwnerCredentialsContext context)
         {
             // Validate the credentials here (e.g using ASP.NET Identity).
             // You can call Rejected() with an error code/description to reject
