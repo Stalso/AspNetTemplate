@@ -258,11 +258,18 @@ namespace Template.WebApi.Models
             }
 
             var hasher = new PasswordHasher<TApplication>();
-            if (hasher.VerifyHashedPassword(application, hash, secret) == PasswordVerificationResult.Failed)
+            try
             {
-                Logger.LogWarning("Client authentication failed for {Client}.", await GetDisplayNameAsync(application));
+                if (hasher.VerifyHashedPassword(application, hash, secret) == PasswordVerificationResult.Failed)
+                {
+                    Logger.LogWarning("Client authentication failed for {Client}.", await GetDisplayNameAsync(application));
 
-                return false;
+                    return false;
+                }
+            }
+            catch(Exception ex)
+            {
+               
             }
 
             return true;

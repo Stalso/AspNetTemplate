@@ -180,6 +180,7 @@ namespace OpenIddict
             context.Validated();
         }
 
+        //TODO maybe add to final
         public override async Task GrantClientCredentials( GrantClientCredentialsContext context)
         {
             var manager = context.HttpContext.RequestServices.GetRequiredService<OpenIddictManager<TUser, TApplication>>();
@@ -210,7 +211,7 @@ namespace OpenIddict
 
             context.Validated(ticket);
         }
-
+        
         public override async Task GrantRefreshToken(GrantRefreshTokenContext context)
         {
             var manager = context.HttpContext.RequestServices.GetRequiredService<OpenIddictManager<TUser, TApplication>>();

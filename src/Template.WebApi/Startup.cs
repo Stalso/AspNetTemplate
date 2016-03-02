@@ -47,6 +47,7 @@ namespace Template.WebApi
                });
             services.AddScoped<IAuthStore<ApplicationUser,Application>, AuthStore<ApplicationUser, Application, IdentityRole, 
                 ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>, string>>();
+            services.AddScoped<AuthManager<ApplicationUser, Application>>();
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password = new PasswordOptions()
@@ -88,7 +89,7 @@ namespace Template.WebApi
                 });
             });
 
-            app.UseIdentity();
+            //app.UseIdentity();
 
             // Note: visit https://docs.nwebsec.com/en/4.2/nwebsec/Configuring-csp.html for more information.
             app.UseCsp(options => options.DefaultSources(configuration => configuration.Self())
@@ -118,7 +119,7 @@ namespace Template.WebApi
             });
            
             app.UseMvc();
-
+            var hasher = new PasswordHasher<Application>();
             using (var database = app.ApplicationServices.GetService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>())
             {              
                 database.Applications.Add(new Application
@@ -133,7 +134,8 @@ namespace Template.WebApi
                     DisplayName = "My client application",
                     //RedirectUri = "http://localhost:10450/signin-oidc",
                     //LogoutRedirectUri = "http://localhost:10450/",
-                    Secret = "secret_secret_secret",                    
+                    //Secret = "secret_secret_secret",
+                    Secret = hasher.HashPassword(null, "secret_secret_secret"),
                     Type = ApplicationTypes.Confidential
                 });
 
