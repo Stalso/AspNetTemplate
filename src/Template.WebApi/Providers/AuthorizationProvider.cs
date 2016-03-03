@@ -407,7 +407,7 @@ namespace Template.WebApi.Providers {
                new ClaimsPrincipal(identity),
                context.AuthenticationTicket.Properties,
                context.Options.AuthenticationScheme);
-            ticket.SetResources(new[] { "http://localhost:10450/" });
+            ticket.SetResources(new[] { "http://localhost:10377" });
             context.Validated(ticket);
         }
 

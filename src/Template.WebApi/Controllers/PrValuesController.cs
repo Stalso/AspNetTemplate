@@ -6,12 +6,14 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Template.WebApi.Models;
+using Microsoft.AspNet.Cors;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Template.WebApi.Controllers
 {
     //[Authorize(Policy = "API")]
+    //[EnableCors("AllowAllOrigins")]
     [Authorize]
     [Route("api/[controller]")]
     public class PrValuesController : Controller

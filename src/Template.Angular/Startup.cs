@@ -37,7 +37,8 @@ namespace Template.Angular
             loggerFactory.AddDebug();
 
             app.UseIISPlatformHandler();
-
+            app.UseDefaultFiles();
+            
             app.UseStaticFiles();
 
             app.UseMvc();
