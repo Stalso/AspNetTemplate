@@ -41,19 +41,17 @@ namespace Template.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
 
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin",
-            //        builder =>  builder.WithOrigins("http://localhost:10377")).AllowAnyHeader();
-            //});
-
+         
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
                         builder =>
                         {
+                            builder.AllowCredentials();
                             builder.AllowAnyOrigin();
                             builder.AllowAnyHeader();
+                            builder.AllowAnyMethod();
+                            builder.Build();
                         });
             });
             
@@ -79,15 +77,6 @@ namespace Template.WebApi
             }).AddEntityFrameworkStores<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>().AddDefaultTokenProviders();
             services.AddAuthentication();
 
-            //services.AddAuthorization(options => {
-            //    // Add a new policy requiring a "scope" claim
-            //    // containing the "api-resource-controller" value.
-            //    options.AddPolicy("API", policy => {
-            //        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-            //        policy.RequireClaim(OpenIdConnectConstants.Claims.Scope, "api-resource-controller");
-            //    });
-            //});
-
             // Add framework services.
            
             services.AddCaching();
@@ -99,37 +88,34 @@ namespace Template.WebApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-           
+            app.UseCors("AllowAllOrigins");
             app.UseIISPlatformHandler();
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
            
-            // Create a new branch where the registered middleware will be executed only for API calls.
-            //        app.UseCors(builder =>
-            //builder.WithOrigins("http://localhost:10377")
-            //       .AllowAnyHeader()
-            //);
+            // Create a new branch where the registered middleware will be executed only for API calls.            
 
             app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api")), branch =>
             {
                 branch.UseJwtBearerAuthentication(options =>
                 {
-                    app.UseCors("AllowAllOrigins");
+                  
                     options.AutomaticAuthenticate = true;
                     options.AutomaticChallenge = true;
                     options.RequireHttpsMetadata = false;
+                    // Thisi is test, if I uncomment this and SetResource in AuthorizationProvider everything works in postman
                     //options.Audience = "http://localhost:10450/";
-                    options.Audience = "http://localhost:10377/";
-                    //options.Audience = null;
+                    // My Angular client
+                    //options.Audience = "http://localhost:10377";
+                    options.TokenValidationParameters.ValidAudiences = new[] { "http://localhost:10450/", "http://localhost:10377/" };
+                    //options.
+                    // My Api
                     options.Authority = "http://localhost:10450/";
-                    //(options.Events as JwtBearerEvents).OnValidatedToken += context1 =>
-                    //{
-                    //    return Task.FromResult(true);
-                    //};
+                  
                 });
             });
             
-            //app.UseIdentity();
+            
 
             // Note: visit https://docs.nwebsec.com/en/4.2/nwebsec/Configuring-csp.html for more information.
             app.UseCsp(options => options.DefaultSources(configuration => configuration.Self())
@@ -172,13 +158,9 @@ namespace Template.WebApi
                 {
                     Id = "myConfidentialClient",
                     DisplayName = "My client application",
-                    //RedirectUri = "http://localhost:10450/signin-oidc",
-                    //LogoutRedirectUri = "http://localhost:10450/",
-                    //Secret = "secret_secret_secret",
                     Secret = hasher.HashPassword(null, "secret_secret_secret"),
                     Type = ApplicationTypes.Confidential
                 });
-
 
                 database.SaveChanges();
                 CreateUser(app).Wait();

@@ -13,6 +13,8 @@
          'protCtrl',
          'protService',
          'rootCtrl',
+         'tokenCtrl',
+         'authService'
         // 3rd Party Modules
         
     ]);

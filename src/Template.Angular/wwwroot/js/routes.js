@@ -32,6 +32,9 @@
             .when('/prot', {
                 templateUrl: 'views/prot.html',
                 controller: 'protController as controller',
+            }).when('/token', {
+                templateUrl: 'views/token.html',
+                controller: 'tokenController as controller',
             }).otherwise({ redirectTo: "/home" });
            
             $locationProvider.html5Mode(true);

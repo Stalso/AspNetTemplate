@@ -318,7 +318,7 @@ namespace Template.WebApi.Providers {
                 await manager.ResetAccessFailedCountAsync(user);
             }
 
-            //Uncommebnt if I want Email
+            
             if (context.Request.ContainsScope(OpenIdConnectConstants.Scopes.Profile) &&
                !context.Request.ContainsScope(OpenIdConnectConstants.Scopes.Email) &&
                 string.Equals(await manager.GetUserNameAsync(user),
@@ -342,7 +342,9 @@ namespace Template.WebApi.Providers {
                context.Options.AuthenticationScheme);
 
             //ticket.SetResources(context.Request.GetResources());
-            ticket.SetResources(new[] { "http://localhost:10450/" });
+            // Fix this with rc2
+            ticket.SetResources(new[] { "http://localhost:10450/", "http://localhost:10377/" });
+            //ticket.SetResources(new[] { "http://localhost:10377/" });
             ticket.SetScopes(context.Request.GetScopes());
 
             context.Validated(ticket);

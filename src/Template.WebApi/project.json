@@ -22,7 +22,9 @@
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-    "NWebsec.Middleware": "1.0.0-gamma-39"
+    "NWebsec.Middleware": "1.0.0-gamma-39",
+    "Microsoft.AspNet.Mvc.Cors": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Cors": "6.0.0-rc1-final"
   },
 
   "commands": {

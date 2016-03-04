@@ -13,7 +13,7 @@ using Microsoft.AspNet.Cors;
 namespace Template.WebApi.Controllers
 {
     //[Authorize(Policy = "API")]
-    //[EnableCors("AllowAllOrigins")]
+    [EnableCors("AllowAllOrigins")]
     [Authorize]
     [Route("api/[controller]")]
     public class PrValuesController : Controller
