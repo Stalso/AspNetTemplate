@@ -75,10 +75,12 @@ namespace Template.WebApi
 
                 };
             }).AddEntityFrameworkStores<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>().AddDefaultTokenProviders();
-            services.AddAuthentication();
+            services.AddAuthorization(options => options.AddPolicy("ElevatedRights", policy =>
+                   policy.RequireRole("Admin", "PowerUser", "BackupAdministrator")));
+            //services.AddAuthentication();
 
             // Add framework services.
-           
+            services.AddInstance<IConfiguration>(Configuration);
             services.AddCaching();
             services.AddMvc();
         }
@@ -111,6 +113,7 @@ namespace Template.WebApi
                     //options.
                     // My Api
                     options.Authority = "http://localhost:10450/";
+                    //options.TokenValidationParameters.RoleClaimType 
                   
                 });
             });
@@ -137,8 +140,10 @@ namespace Template.WebApi
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
                 options.AllowInsecureHttp = true;
-                options.AuthorizationEndpointPath = PathString.Empty;
+                options.AuthorizationEndpointPath = "/auth";
+                options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
+                //options.Iden
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:
                 // options.SigningCredentials.AddCertificate(certificate);
@@ -174,6 +179,14 @@ namespace Template.WebApi
                 var userManager = app.ApplicationServices.GetRequiredService<UserManager<ApplicationUser>>();
 
                 var result = await userManager.CreateAsync(user, "admin");
+
+                var role = new IdentityRole()
+                {
+                    Name = "Admin",
+                };
+                var roleManager = app.ApplicationServices.GetRequiredService<RoleManager<IdentityRole>>();
+                var roleResult = await roleManager.CreateAsync(role);
+                var addToRoleResult = await userManager.AddToRoleAsync(user, "Admin");
             }
             catch (Exception ex)
             {

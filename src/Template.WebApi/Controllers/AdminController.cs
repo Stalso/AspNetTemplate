@@ -4,23 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Template.WebApi.Models;
-using Microsoft.AspNet.Cors;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Template.WebApi.Controllers
 {
-    //[Authorize(Policy = "API")]
-    //[EnableCors("AllowAllOrigins")]
-    [Authorize]
+    [Authorize(Policy = "ElevatedRights")]
+    //[Authorize()]
     [Route("api/[controller]")]
-    public class PrValuesController : Controller
+    public class AdminController : Controller
     {
-        //private readonly UserManager<ApplicationUser> _userManager;
-        //private readonly SignInManager<ApplicationUser> _signInManager;
         // GET: api/values
+      
         [HttpGet]
         public IEnumerable<string> Get()
         {

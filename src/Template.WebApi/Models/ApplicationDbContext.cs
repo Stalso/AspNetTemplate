@@ -37,8 +37,10 @@ namespace Template.WebApi.Models
     }
     public static class Destinations
     {
-        public const string AccessToken = "access_token";
+        //public const string AccessToken = "access_token";
         public const string IdentityToken = "id_token";
+        //TODO rename in rc2
+        public const string AccessToken = "token";
     }
     public static class Claims
     {
@@ -54,6 +56,7 @@ namespace Template.WebApi.Models
         public const string Audiences = "audiences";
         public const string Confidential = "confidential";
         public const string Destinations = "destinations";
+        public const string Destination = "destination";
         public const string Nonce = "nonce";
         public const string Presenters = "presenters";
         public const string RedirectUri = "redirect_uri";

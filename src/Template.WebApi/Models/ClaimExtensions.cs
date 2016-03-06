@@ -32,7 +32,10 @@ namespace Template.WebApi.Models
                 throw new ArgumentException("Destinations cannot contain spaces.", nameof(destinations));
             }
 
-            claim.Properties[Properties.Destinations] =
+            //claim.Properties[Properties.Destinations] =
+            //    string.Join(" ", destinations.Distinct(StringComparer.Ordinal));
+            //TODO chage destination with destinations in rc 2
+            claim.Properties[Properties.Destination] =
                 string.Join(" ", destinations.Distinct(StringComparer.Ordinal));
 
             return claim;

@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Schema;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Configuration;
 
 namespace Template.WebApi.Providers {
     public sealed class AuthorizationProvider : OpenIdConnectServerProvider {
@@ -267,6 +268,7 @@ namespace Template.WebApi.Providers {
         public override async Task GrantResourceOwnerCredentials(GrantResourceOwnerCredentialsContext context)
         {
 
+            var conf =  context.HttpContext.RequestServices.GetService(typeof(IConfiguration)) as IConfiguration;
             #region UserChecking
             var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
 
@@ -336,6 +338,11 @@ namespace Template.WebApi.Providers {
 
             var identity = await manager.CreateIdentityAsync(user, context.Request.GetScopes());
 
+            //identity.AddClaim()
+            identity.AddClaim("urn:customclaim", "value", "token id_token");
+            //identity.AddClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin", "token id_token");
+            //{
+            //http://schemas.microsoft.com/ws/2008/06/identity/claims/role
             var ticket = new AuthenticationTicket(
                new ClaimsPrincipal(identity),
                new AuthenticationProperties(),
