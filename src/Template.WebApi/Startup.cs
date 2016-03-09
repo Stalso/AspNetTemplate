@@ -93,6 +93,7 @@ namespace Template.WebApi
             app.UseCors("AllowAllOrigins");
             app.UseIISPlatformHandler();
             app.UseDeveloperExceptionPage();
+            app.UseDefaultFiles();
             app.UseStaticFiles();
            
             // Create a new branch where the registered middleware will be executed only for API calls.            
