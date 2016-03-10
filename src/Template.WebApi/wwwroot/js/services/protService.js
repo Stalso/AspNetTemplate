@@ -13,7 +13,9 @@
           
             return service;
 
-            function getData() {            }
+            function getData() {
+                return $http.get("/api/prvalues");
+            }
         }]);
 
   

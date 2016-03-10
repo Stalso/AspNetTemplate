@@ -16,6 +16,8 @@
          'tokenCtrl',
          'loginCtrl',
          'authService',
+         'adminCtrl',
+         'adminService',
          'angularJwt',
         // 3rd Party Modules
         'LocalStorageModule',
@@ -52,5 +54,10 @@
             console.log("token Getter works");
         }],
         $httpProvider.interceptors.push('jwtInterceptor');
+    }]).run(["$rootScope", "$location", function ($rootScope, $location) {
+        $rootScope.$on("unauthenticated", function (userInfo) {
+            $location.path('/login');
+        });
+
     }]);
 })();

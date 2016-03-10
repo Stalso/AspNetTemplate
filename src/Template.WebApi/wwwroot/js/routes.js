@@ -35,6 +35,9 @@
             }).when('/token', {
                 templateUrl: 'views/token.html',
                 controller: 'tokenController as controller',
+            }).when('/admin', {
+                templateUrl: 'views/admin.html',
+                controller: 'adminController as controller',
             }).when('/login', {
                 templateUrl: 'views/login.html',
                 controller: 'loginController as controller',

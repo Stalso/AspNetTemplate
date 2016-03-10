@@ -95,7 +95,7 @@ namespace Template.WebApi
             app.UseDeveloperExceptionPage();
             app.UseDefaultFiles();
             app.UseStaticFiles();
-           
+
             // Create a new branch where the registered middleware will be executed only for API calls.            
 
             app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api")), branch =>
@@ -142,6 +142,7 @@ namespace Template.WebApi
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
                 options.AllowInsecureHttp = true;
+                options.AuthorizationEndpointPath = PathString.Empty;
                 //options.AuthorizationEndpointPath = "/auth";
                 //options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
@@ -151,7 +152,7 @@ namespace Template.WebApi
                 // RSA keys but you can also use your own certificate:
                 // options.SigningCredentials.AddCertificate(certificate);
             });
-           
+         
             app.UseMvc();
             var hasher = new PasswordHasher<Application>();
             using (var database = app.ApplicationServices.GetService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>())
