@@ -3,7 +3,7 @@
 
     angular
         .module('angular-jwt.jwt',[])
-        .factory('jwtHelper', ['$window', function ($window) {
+        .service('jwtHelper', ['$window', function ($window) {
             this.urlBase64Decode = function (str) {
                 var output = str.replace(/-/g, '+').replace(/_/g, '/');
                 switch (output.length % 4) {

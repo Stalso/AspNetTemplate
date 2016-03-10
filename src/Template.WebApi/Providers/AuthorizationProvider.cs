@@ -339,7 +339,7 @@ namespace Template.WebApi.Providers {
             var identity = await manager.CreateIdentityAsync(user, context.Request.GetScopes());
 
             //identity.AddClaim()
-            identity.AddClaim("urn:customclaim", "value", "token id_token");
+            //identity.AddClaim("urn:customclaim", "value", "token id_token");
             //identity.AddClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin", "token id_token");
             //{
             //http://schemas.microsoft.com/ws/2008/06/identity/claims/role

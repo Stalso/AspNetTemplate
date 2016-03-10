@@ -114,6 +114,7 @@ namespace Template.WebApi
                     //options.
                     // My Api
                     options.Authority = "http://localhost:10450/";
+                    
                     //options.TokenValidationParameters.RoleClaimType 
                   
                 });
@@ -141,9 +142,10 @@ namespace Template.WebApi
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
                 options.AllowInsecureHttp = true;
-                options.AuthorizationEndpointPath = "/auth";
-                options.ProfileEndpointPath = "/prof";
+                //options.AuthorizationEndpointPath = "/auth";
+                //options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
+                //options.AccessTokenLifetime = new TimeSpan(0, 0, 5);
                 //options.Iden
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:

@@ -56,12 +56,12 @@
                         return request;
                     });
                 },
-                responseError: function (response) {
+                responseError: function (rejection) {
                     // handle the case where the user is not authenticated
                     if (response.status === 401) {
-                        $rootScope.$broadcast('unauthenticated', response);
+                        $rootScope.$broadcast('unauthenticated', rejection);
                     }
-                    return $q.reject(response);
+                    return $q.reject(rejection);
                 }
             };
         };
