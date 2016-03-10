@@ -18,6 +18,7 @@
          'authService',
          'adminCtrl',
          'adminService',
+         'registerCtrl',
          'angularJwt',
         // 3rd Party Modules
         'LocalStorageModule',
@@ -25,7 +26,7 @@
         jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$http', 'localStorageService', 'Auth', function (jwtHelper, $http, localStorageService, Auth)
         {
             var accessToken = localStorageService.get('access_token');
-            if (jwtHelper.isTokenExpired(accessToken)) {
+            if (accessToken && jwtHelper.isTokenExpired(accessToken)) {
                 Auth.refreshToken().then(function (res) {
                     return res.data;
                 });
@@ -56,7 +57,9 @@
         $httpProvider.interceptors.push('jwtInterceptor');
     }]).run(["$rootScope", "$location", function ($rootScope, $location) {
         $rootScope.$on("unauthenticated", function (userInfo) {
-            $location.path('/login');
+            //$location.path('/login');
+            var url = $location.url();
+            $location.path("/login").search({ 'returnUrl': url });
         });
 
     }]);

@@ -58,7 +58,7 @@
                 },
                 responseError: function (rejection) {
                     // handle the case where the user is not authenticated
-                    if (response.status === 401) {
+                    if (rejection.status === 401) {
                         $rootScope.$broadcast('unauthenticated', rejection);
                     }
                     return $q.reject(rejection);

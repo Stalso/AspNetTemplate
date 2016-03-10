@@ -41,6 +41,9 @@
             }).when('/login', {
                 templateUrl: 'views/login.html',
                 controller: 'loginController as controller',
+            }).when('/register', {
+                templateUrl: 'views/register.html',
+                controller: 'registerController as controller',
             }).otherwise({ redirectTo: "/home" });
            
             $locationProvider.html5Mode(true);
