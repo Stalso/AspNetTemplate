@@ -22,44 +22,40 @@
          'angularJwt',
         // 3rd Party Modules
         'LocalStorageModule',
-    ]).config(['$httpProvider', 'jwtInterceptorProvider', function ($httpProvider, jwtInterceptorProvider) {
-        jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$http', 'localStorageService', 'Auth', function (jwtHelper, $http, localStorageService, Auth)
-        {
-            var accessToken = localStorageService.get('access_token');
-            if (accessToken && jwtHelper.isTokenExpired(accessToken)) {
-                Auth.refreshToken().then(function (res) {
-                    return res.data;
-                });
-            }
-            else
-                return accessToken;
-            //var refreshToken = localStorage.getItem('refresh_token');
-            //if (jwtHelper.isTokenExpired(accessToken)) {
-            //    // This is a promise of a JWT id_token
-            //    return $http({
-            //        url: '/delegation',
-            //        // This makes it so that this request doesn't send the JWT
-            //        skipAuthorization: true,
-            //        method: 'POST',
-            //        data: {
-            //            grant_type: 'refresh_token',
-            //            refresh_token: refreshToken,
+    ]).config(['$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', function ($httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
+        localStorageServiceProvider.setNotify(true, true);
+        jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$http', 'localStorageService', 'Auth', function (jwtHelper, $http, localStorageService, Auth) {
+            console.log('tokenGetter');
+            var token = Auth.getAccessTokenWithRefresh();
+            return token;
+        }];
 
-            //        }
-            //    }).then(function (response) {
-            //        var id_token = response.data.id_token;
-            //        localStorage.setItem('id_token', id_token);
-            //        return id_token;
-            //    });
-            //}
-            console.log("token Getter works");
-        }],
         $httpProvider.interceptors.push('jwtInterceptor');
-    }]).run(["$rootScope", "$location", function ($rootScope, $location) {
+    }]).run(["$rootScope", "$location", 'Auth', function ($rootScope, $location,Auth) {
         $rootScope.$on("unauthenticated", function (userInfo) {
-            //$location.path('/login');
+            
             var url = $location.url();
             $location.path("/login").search({ 'returnUrl': url });
+        });
+       
+        $rootScope.$on('LocalStorageModule.notification.setitem', function (scope,data) {
+            if(data.key == 'authData')
+                Auth.changeAuthData();
+            console.log('authdataset');
+        });
+        $rootScope.$on('LocalStorageModule.notification.removeitem', function (scope,data) {
+            if (data.key == 'authData')
+                Auth.changeAuthData();
+            console.log('authdataremove');
+        });
+        $rootScope.$on('$routeChangeStart', function (event, next, current) {
+            var nextPath = 'undef';
+            var prevPath = 'undef';
+            if (next)
+                nextPath = next.originalPath;
+            if (current)
+                prevPath = current.originalPath;
+            console.log('route changed next: ' + nextPath + ' current: ' + prevPath);
         });
 
     }]);

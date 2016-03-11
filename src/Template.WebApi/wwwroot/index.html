@@ -80,10 +80,10 @@
                     <li><a ng-href="/token">Token</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Вася</a></li>
-                    <li><a ng-href="/login">Login</a></li>
-                    <li><a ng-href="/register">Register</a></li>
-                    <li><a href="" ng-click="root.logoff()">Logoff</a></li>
+                    <li><a href="#">{{root.userData.username}}</a></li>
+                    <li><a ng-href="/login" ng-hide="root.userData">Login</a></li>
+                    <li><a ng-href="/register" ng-hide="root.userData">Register</a></li>
+                    <li><a href="" ng-click="root.logoff()" ng-show="root.userData">Logoff</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

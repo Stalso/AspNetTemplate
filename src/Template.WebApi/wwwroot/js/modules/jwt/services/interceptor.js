@@ -46,6 +46,7 @@
                     }));
 
                     return tokenPromise.then(function (token) {
+                        console.log('token promise');
                         if (token) {
                             if (config.urlParam) {
                                 request.params[config.urlParam] = token;
@@ -53,6 +54,7 @@
                                 request.headers[config.authHeader] = config.authPrefix + token;
                             }
                         }
+                        console.log('token');
                         return request;
                     });
                 },
