@@ -6,7 +6,7 @@
         .controller('tokenController', ['$location', 'Auth', '$rootScope', 'jwtHelper', function ($location, Auth, $rootScope, jwtHelper) {
             var vm = this;
             vm.title = 'tokenController';
-            
+            console.log(Auth.getAuthData().username);
             $rootScope.$watch(function () {
                 return Auth.userData
             },
