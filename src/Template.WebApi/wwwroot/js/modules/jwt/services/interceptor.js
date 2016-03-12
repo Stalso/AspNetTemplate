@@ -46,7 +46,7 @@
                     }));
 
                     return tokenPromise.then(function (token) {
-                        console.log('token promise');
+                        console.log('token promise success:' + token);
                         if (token) {
                             if (config.urlParam) {
                                 request.params[config.urlParam] = token;
@@ -54,14 +54,21 @@
                                 request.headers[config.authHeader] = config.authPrefix + token;
                             }
                         }
-                        console.log('token');
+                        //console.log('token');
                         return request;
+                    }, function (err) {
+                        console.log('token promise: error' + err);
+                        return request;
+                        //return err;
                     });
                 },
                 responseError: function (rejection) {
                     // handle the case where the user is not authenticated
                     if (rejection.status === 401) {
                         $rootScope.$broadcast('unauthenticated', rejection);
+                    }
+                    if (rejection.status === 403) {
+                        $rootScope.$broadcast('forbidden', rejection);
                     }
                     return $q.reject(rejection);
                 }

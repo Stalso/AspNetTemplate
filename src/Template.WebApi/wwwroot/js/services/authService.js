@@ -6,7 +6,7 @@
         .factory('Auth', ['$http', '$location', '$route', 'localStorageService','jwtHelper','$q', function ($http, $location, $route, localStorageService,jwtHelper,$q) {           
 
             var service = {
-                userData:{},
+                //userData:{},
                 getToken: getToken,
                 refreshToken: refreshToken,
                 register: register,
@@ -26,48 +26,28 @@
 
             // login action. Gets access_token
             function getToken(data) {
+                console.log("login getToken enetered")
                 clearAuthData();
 
                 var postdata = 'grant_type=password&username=' + data.username + '&password=' + data.password + '&client_id=myPublicClient&scope=offline_access roles profile';
                 
                 return $http.post('/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
+                    console.log('login getToken server response' + res.data);
                     if (res && res.data) {
                         setAuthData(res.data);
                     }
                     return res;
                 }, function (err) {
-                    return err;
+                    console.log(err);
+                    return $q.reject(err);
                 });
 
-                //var postdata = 'grant_type=password&username=' + data.username + '&password=' + data.password + '&client_id=myPublicClient&scope=offline_access roles profile';
-
-                //return $http.post('/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
-                //    if (res && res.data) {
-                //        localStorageService.set('access_token', res.data.access_token);
-                //        localStorageService.set('refresh_token', res.data.refresh_token);
-                //        setAuthData(res.data);
-                //    }
-                //    return res;
-                //}, function (err) {
-                //    return err;
-                //});
             };
 
             // gets access token from refresh token
             function refreshToken() {
                 
-                //var refresh_token = localStorageService.get('refresh_token');
-                //var postdata = 'grant_type=refresh_token&refresh_token=' + refresh_token + '&client_id=myPublicClient';
-
-                //return $http.post('/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
-                //    if (res && res.data) {
-                //        localStorageService.set('access_token', res.data.access_token);
-                //        localStorageService.set('refresh_token', res.data.refresh_token);
-                //    }
-                //    return res;
-                //}, function (err) {
-                //    return err;
-                //});
+                
                 var data = getAuthData();
                 if (data && data.refresh_token) {
                     var postdata = 'grant_type=refresh_token&refresh_token=' + data.refresh_token + '&client_id=myPublicClient';
@@ -104,15 +84,9 @@
 
             // logoff action
             function logoff() {
-                //if (localStorageService.get('access_token')) {
-                //    localStorageService.remove('access_token');
-                //    localStorageService.remove('refresh_token');
-                //    $location.refresh();
-
-                //}
+               
                 if (localStorageService.get('authData')) {
-                    clearAuthData();
-                    //$location.refresh();
+                    clearAuthData();                    
                     $route.reload()
 
                 }
@@ -123,17 +97,14 @@
                 getAuthDataWithRefresh().then(function (res) {
                     service.userData = res;
                 }, function (err) {
-                    service.userdata = {};
+                    //service.userdata = {};
+                    service.userData = null;
                 });
             }
             // Check Auth
             function isAuthorized() {
                 
-                //var token = getAccessTokenWithRefresh().then(function (res) {
-                //    return true;
-                //}, function (err) {
-                //    return false;
-                //});
+              
                 if (getAccessTokenWithRefresh()) {
                     return true;
                 }
@@ -151,14 +122,8 @@
 
             // Get auth data from local storage with refresh
             function getAuthDataWithRefresh() {
-                //var token = getAccessTokenWithRefresh();
-                //if (token) {
-                //    return getAuthData();
-                //}
-                //else
-                //    return token;
-                //var deferred = $q.defer();
-                console.log('getAuthDataWithRefresh');
+                
+              
                 var deffered = $q.defer();
                 var data = getAuthData();
                 if (data) {
@@ -166,6 +131,7 @@
                         var access_token = data.access_token;
                         if (access_token && !jwtHelper.isTokenExpired(access_token)) {
                             deffered.resolve(data);
+                            console.log('getAuthDataWithRefresh: good access token' + data.access_token);
                             return deffered.promise;
                         }
                         else {
@@ -175,9 +141,11 @@
                                 //return res.data;
                                 console.log('getAuthDataWithRefresh return');
                                 var auth = getAuthData();
+                                console.log('getAuthDataWithRefresh: good access token after token refresh' + auth);
                                 return auth;
 
                             }, function (err) {
+                                console.log('getAuthDataWithRefresh: bad access token after token refresh' + err);
                                 return err;
                             });
                         }
@@ -185,12 +153,14 @@
 
                     else {
                         deffered.reject('No refresh token');
+                        console.log('getAuthDataWithRefresh error: No refresh token');
                         return deffered.promise;
                     }
                     //    data.refresh_token;
                 }
                 else {
                     deffered.reject('No auth data token');
+                    console.log('getAuthDataWithRefresh error: No auth data');
                     return deffered.promise;
                 }
                 //    data;
@@ -209,44 +179,15 @@
 
             // Get access_token from local storage and refreshes it if needed
             function getAccessTokenWithRefresh() {
-                ////var deferred = $q.defer();
-                //var data = getAuthData();
-                //if (data) {
-                //    if(data.refresh_token)
-                //    {
-                //        var access_token = data.access_token;
-                //        if(access_token && !jwtHelper.isTokenExpired(access_token)){
-                //            return access_token;
-                //        }
-                //        else {
-                //            //var data = res.data;
-                            
-                //            refreshToken().then(function (res) {
-                //                return res.data;
-                                
-                //            }, function(err){
-                //                return err;
-                //            });
-                //        }
-                //    }
-                //    else
-                //        //return deferred.reject('No refresh token');
-                //        data.refresh_token;
-                //}
-                //else
-                //    //return deferred.reject('No auth data token');
-                //    data;
-               return getAuthDataWithRefresh().then(function (data) {
+                console.log('getAccessTokenWithRefresh started: ');
+                return getAuthDataWithRefresh().then(function (data) {
+                    console.log('getAccessTokenWithRefresh success: ' + data.access_token)
                     return data.access_token;
-               }, function (err) {
-                   return err;
-               });
-                //if (data)
-                //{
-                //    return data.access_token;
-                //}
-               
-
+                }, function (err) {
+                    console.log('getAccessTokenWithRefresh error: ' + err)
+                    return $q.reject(err);
+                   //return err;
+               });            
             };
 
             // Set auth data to local storage
@@ -260,16 +201,22 @@
                         username: tokenInfo.unique_name,
 
                     };
+                    console.log('setAuthData: present data set' + userdata);
                     localStorageService.set('authData', userdata);
                 }
-                else
+                else {
+                    console.log('setAuthData: No data to set' + userdata);
                     clearAuthData();
+                }
             };
 
             // Clear auth data from local storage
             function clearAuthData() {
 
+                console.log('clearAuthData enetered');
                 localStorageService.remove('authData');
+                console.log('clearAuthData finished');
+                
             };           
 
         }]);

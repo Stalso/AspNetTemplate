@@ -3,7 +3,7 @@
 
     angular
         .module('loginCtrl', [])
-        .controller('loginController', ['$location','Auth','jwtHelper', function ($location,Auth,jwtHelper) {
+        .controller('loginController', ['$location', 'Auth', 'jwtHelper', '$window', function ($location, Auth, jwtHelper, $window) {
             var vm = this;
             vm.title = 'loginController';
 
@@ -19,9 +19,7 @@
                 //$location.path('/home');
                 
                 Auth.getToken(data).then(function (res) {
-                    if (res) {
-                        vm.token = jwtHelper.decodeToken(res.data.access_token);
-                    }
+                   
                     var returnUrl = $location.search().returnUrl;
                     if (returnUrl) {
                         $location.url(returnUrl);
@@ -29,6 +27,7 @@
                     else
                         $location.path('/');
                 }, function (err) {
+                    $window.alert('Incorrect username/password')
                     console.log(err);
                 });
 

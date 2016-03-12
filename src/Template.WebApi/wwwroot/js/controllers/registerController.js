@@ -9,8 +9,8 @@
 
             vm.loginData = {
                 username: 'newUser',
-                password: 'user',
-                confirmpassword: 'user',
+                password: 'admin',
+                confirmpassword: 'admin',
             };
 
             vm.register = function (data) {

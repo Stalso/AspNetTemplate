@@ -13,7 +13,7 @@
             return service;
 
             function getData() {
-                return $http.get("/api/values");
+                return $http.get("/api/values", { skipAuthorization: true });
             }
         }]);
 })();

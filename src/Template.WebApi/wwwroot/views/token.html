@@ -2,7 +2,8 @@
     <h1>{{controller.title}}</h1>
 
 </div>
-<!--<div class="row">
-    <p>{{controller.data}}</p>
-
-</div>-->
+<div class="row">
+    <!--<pre> {{controller.data}}</pre>-->
+    <!--{{controller.data | prettyJson: true}}-->
+    <pre>{{ controller.data | json : spacing}}</pre>
+</div>
