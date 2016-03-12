@@ -46,7 +46,10 @@
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
-    }]).run(["$rootScope", "$location", 'Auth', function ($rootScope, $location,Auth) {
+    }]).app.constant('ngAuthSettings', {
+        apiServiceBaseUri: '',
+        clientId: 'myPublicClient', 
+    }).run(["$rootScope", "$location", 'Auth', function ($rootScope, $location,Auth) {
         $rootScope.$on("unauthenticated", function (userInfo) {
             
             var url = $location.url();

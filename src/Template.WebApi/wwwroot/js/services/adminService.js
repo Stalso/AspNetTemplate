@@ -3,7 +3,7 @@
 
     angular
         .module('adminService', [])
-        .factory('Admin', ['$http', function ($http) {
+        .factory('Admin', ['$http', 'ngAuthSettings', function ($http, ngAuthSettings) {
             var serviceBase = 'http://localhost:10450/'
 
             var service = {
@@ -14,7 +14,7 @@
             return service;
 
             function getData() {
-                return $http.get("/api/admin");
+                return $http.get(ngAuthSettings.apiServiceBaseUri + "/api/admin");
             }
         }]);
 

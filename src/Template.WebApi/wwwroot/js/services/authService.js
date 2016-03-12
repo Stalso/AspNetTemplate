@@ -3,7 +3,7 @@
 
     angular
         .module('authService', [])
-        .factory('Auth', ['$http', '$location', '$route', 'localStorageService','jwtHelper','$q', function ($http, $location, $route, localStorageService,jwtHelper,$q) {           
+        .factory('Auth', ['$http', '$location', '$route', 'localStorageService', 'jwtHelper', '$q', 'ngAuthSettings', function ($http, $location, $route, localStorageService, jwtHelper, $q, ngAuthSettings) {
 
             var service = {
                 //userData:{},
@@ -29,9 +29,9 @@
                 console.log("login getToken enetered")
                 clearAuthData();
 
-                var postdata = 'grant_type=password&username=' + data.username + '&password=' + data.password + '&client_id=myPublicClient&scope=offline_access roles profile';
+                var postdata = 'grant_type=password&username=' + data.username + '&password=' + data.password + '&client_id=' + ngAuthSettings.clientId + '&scope=offline_access roles profile';
                 
-                return $http.post('/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
+                return $http.post(ngAuthSettings.apiServiceBaseUri + '/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
                     console.log('login getToken server response' + res.data);
                     if (res && res.data) {
                         setAuthData(res.data);
@@ -50,9 +50,9 @@
                 
                 var data = getAuthData();
                 if (data && data.refresh_token) {
-                    var postdata = 'grant_type=refresh_token&refresh_token=' + data.refresh_token + '&client_id=myPublicClient';
+                    var postdata = 'grant_type=refresh_token&refresh_token=' + data.refresh_token + '&client_id=' + ngAuthSettings.clientId;
 
-                    return $http.post('/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
+                    return $http.post(ngAuthSettings.apiServiceBaseUri + '/token', postdata, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, skipAuthorization: true }).then(function (res) {
                         if (res && res.data) {
                             console.log('refresh setted');
                             setAuthData(res.data);
@@ -75,7 +75,7 @@
 
             // registers NewUser
             function register(postdata) {
-                return $http.post('/api/account', postdata, { skipAuthorization: true }).then(function (res) {                  
+                return $http.post(ngAuthSettings.apiServiceBaseUri + '/api/account', postdata, { skipAuthorization: true }).then(function (res) {
                     return res;
                 }, function (err) {
                     return err;

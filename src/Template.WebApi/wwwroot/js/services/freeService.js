@@ -3,7 +3,7 @@
 
     angular
         .module('freeService',[])
-        .factory('Free', ['$http', function ($http) {
+        .factory('Free', ['$http', 'ngAuthSettings', function ($http, ngAuthSettings) {
            
 
             var service = {
@@ -13,7 +13,7 @@
             return service;
 
             function getData() {
-                return $http.get("/api/values", { skipAuthorization: true });
+                return $http.get(ngAuthSettings.apiServiceBaseUri + "/api/values");
             }
         }]);
 })();
