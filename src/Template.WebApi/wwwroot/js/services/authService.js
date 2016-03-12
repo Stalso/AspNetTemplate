@@ -64,8 +64,9 @@
                         console.log('refreshToken finished');
                         return res;
                     }, function (err) {
+                        console.log('refreshToken error');
                         clearAuthData();
-                        return err;
+                        return $q.reject(err);
                     });
                 }
                 else

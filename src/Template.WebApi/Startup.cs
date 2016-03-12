@@ -147,6 +147,7 @@ namespace Template.WebApi
                 //options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
                 options.AccessTokenLifetime = new TimeSpan(0, 0, 5);
+                options.RefreshTokenLifetime = new TimeSpan(0, 0, 10);
                 //options.Iden
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:
