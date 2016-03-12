@@ -18,12 +18,21 @@
     <script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="libs/angular/angular.min.js"></script>
     <script type="text/javascript" src="libs/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="libs/angular-local-storage/dist/angular-local-storage.min.js"></script>
    
     
 
 
     <!-- /JS -->
     <!-- ANGULAR CUSTOM -->
+
+    <!-- CustomModules -->
+    <script src="js/modules/jwt/services/interceptor.js"></script>
+    <script src="js/modules/jwt/services/jwt.js"></script>
+    <script src="js/modules/jwt/angularJwt.js"></script>
+    <script src="js/modules/prettyJson/prettyJson.js"></script>
+    <!-- /CustomModules -->
+
     <!-- Controllers -->
 
     <script src="js/controllers/homeController.js"></script>
@@ -31,14 +40,21 @@
     <script src="js/controllers/protController.js"></script>
     <script src="js/controllers/rootController.js"></script>
     <script src="js/controllers/tokenController.js"></script>
+    <script src="js/controllers/loginController.js"></script>
+    <script src="js/controllers/adminController.js"></script>
+    <script src="js/controllers/registerController.js"></script>
+    <script src="js/controllers/forbiddenController.js"></script>
 
     <!-- /Controllers -->
+
     <!-- Services -->
 
     <script src="js/services/freeService.js"></script>
     <script src="js/services/protService.js"></script>
     <script src="js/services/protService.js"></script>
     <script src="js/services/authService.js"></script>
+    <script src="js/services/adminService.js"></script>
+
     <!-- Services -->
 
     <script type="text/javascript" src="js/routes.js"></script>
@@ -46,7 +62,7 @@
 
     <!-- /ANGULAR CUSTOM -->
     <!-- Title -->
-    <title>Demo Application</title>
+    <title>Angular Demo Application</title>
 </head>
 <body ng-app="DemoApp" ng-controller="rootController as root">
 
@@ -59,17 +75,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" ng-href="/home">Project name</a>
+                <a class="navbar-brand" ng-href="/home">Angular Project </a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a ng-href="/free">Free</a></li>
                     <li><a ng-href="/prot">Prot</a></li>
-                    <li><a ng-href="/token">Token</a></li>
+                    <li><a ng-href="/admin">Admin</a></li>
+                    <li><a ng-href="/userInfo">Token</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Вася</a></li>
-
+                    <li><a href="#">{{root.userData.username}}</a></li>
+                    <li><a ng-href="/login" ng-hide="root.userData">Login</a></li>
+                    <li><a ng-href="/register" ng-hide="root.userData">Register</a></li>
+                    <li><a href="" ng-click="root.logoff()" ng-show="root.userData">Logoff</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

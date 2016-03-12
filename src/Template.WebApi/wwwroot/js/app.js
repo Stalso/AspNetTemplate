@@ -22,20 +22,13 @@
          'forbiddenCtrl',
          'angularJwt',
          'io.utils',
+
         // 3rd Party Modules
         'LocalStorageModule',
     ]).config(['$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', function ($httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
         localStorageServiceProvider.setNotify(true, true);
         jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$http', 'localStorageService', 'Auth', '$q', function (jwtHelper, $http, localStorageService, Auth, $q) {
-            console.log('tokenGetter started');
-            //var token = Auth.getAccessTokenWithRefresh().then(function (token) { 
-            //    console.log('tokenGetter success: ' + token);
-            //    return token;
-            //}, function (err) {
-            //    console.log('tokenGetter error: ' + error);
-            //    return err;
-            //});
-            //return token;
+           console.log('tokenGetter started');
            return Auth.getAccessTokenWithRefresh().then(function (token) {
                 console.log('tokenGetter success: ' + token);
                 return token;
@@ -46,7 +39,7 @@
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
-    }]).app.constant('ngAuthSettings', {
+    }]).constant('ngAuthSettings', {
         apiServiceBaseUri: '',
         clientId: 'myPublicClient', 
     }).run(["$rootScope", "$location", 'Auth', function ($rootScope, $location,Auth) {

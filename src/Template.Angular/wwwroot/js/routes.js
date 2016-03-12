@@ -6,9 +6,9 @@
         'ngRoute',
 
         // Custom modules 
-        
+
         // 3rd Party Modules
-        
+
     ]).config([
         // Angular modules 
         '$routeProvider',
@@ -32,11 +32,23 @@
             .when('/prot', {
                 templateUrl: 'views/prot.html',
                 controller: 'protController as controller',
-            }).when('/token', {
+            }).when('/userInfo', {
                 templateUrl: 'views/token.html',
                 controller: 'tokenController as controller',
+            }).when('/admin', {
+                templateUrl: 'views/admin.html',
+                controller: 'adminController as controller',
+            }).when('/login', {
+                templateUrl: 'views/login.html',
+                controller: 'loginController as controller',
+            }).when('/register', {
+                templateUrl: 'views/register.html',
+                controller: 'registerController as controller',
+            }).when('/forbidden', {
+                templateUrl: 'views/forbidden.html',
+                controller: 'forbiddenController as controller',
             }).otherwise({ redirectTo: "/home" });
-           
+
             $locationProvider.html5Mode(true);
         }
     ]);

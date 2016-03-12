@@ -7,11 +7,9 @@
             var vm = this;
             vm.title = 'protController';
             Prot.getData().then(function (res) {
-                vm.data = res;
+                vm.values = res.data;
             }, function (err) {
                 console.log(err);
-            })
-        }]);
-
-   
+            });
+        }]);   
 })();

@@ -3,8 +3,8 @@
 
     angular
         .module('freeService',[])
-        .factory('Free', ['$http', function ($http) {
-            var serviceBase = 'http://localhost:10450/'
+        .factory('Free', ['$http', 'ngAuthSettings', function ($http, ngAuthSettings) {
+           
 
             var service = {
                 getData: getData
@@ -13,7 +13,7 @@
             return service;
 
             function getData() {
-                return $http.get(serviceBase + 'api/values');
+                return $http.get(ngAuthSettings.apiServiceBaseUri + "/api/values");
             }
         }]);
 })();

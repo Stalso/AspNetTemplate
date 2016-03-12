@@ -3,17 +3,19 @@
 
     angular
         .module('rootCtrl',[])
-        .controller('rootController', rootController);
+        .controller('rootController', ['$location', '$rootScope', 'Auth', 'localStorageService', function ($location, $rootScope, Auth, localStorageService) {
+            var vm = this;
+            vm.title = 'homeCtrl';
 
-    rootController.$inject = ['$location']; 
-
-    function rootController($location) {
-        /* jshint validthis:true */
-        var vm = this;
-        vm.title = 'rootController';
-
-        activate();
-
-        function activate() { }
-    }
+            vm.logoff = function () {
+                Auth.logoff();
+            };
+            
+            $rootScope.$watch(function () { 
+                return Auth.userData
+            },
+                function () {
+                    vm.userData = Auth.userData;
+                });
+        }]);
 })();

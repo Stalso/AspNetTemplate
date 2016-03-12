@@ -3,6 +3,7 @@
 
 </div>
 <div class="row">
-    <p>{{controller.data}}</p>
-
+    <!--<pre> {{controller.data}}</pre>-->
+    <!--{{controller.data | prettyJson: true}}-->
+    <pre>{{ controller.data | json : spacing}}</pre>
 </div>
