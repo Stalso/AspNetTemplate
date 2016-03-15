@@ -21,6 +21,9 @@ using System.Security.Claims;
 using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Http.Authentication;
 using AspNet.Security.OpenIdConnect.Server;
+using Template.Domain.Entities;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Formatters;
 
 namespace Template.WebApi
 {
@@ -82,7 +85,30 @@ namespace Template.WebApi
             // Add framework services.
             services.AddInstance<IConfiguration>(Configuration);
             services.AddCaching();
-            services.AddMvc();
+
+            //services.AddMvc().Configure<MvcOptions>(options =>
+            //{
+            //    var jsonOutputFormatter = new JsonOutputFormatter();
+            //    jsonOutputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+
+            //    var jsonInputFormatter = new JsonInputFormatter();
+            //    jsonInputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+
+            //     options.OutputFormatters.Insert(0, jsonOutputFormatter);
+            //    options.InputFormatters.Insert(0, jsonInputFormatter);
+            //}); 
+
+            services.AddMvc(options =>
+            {
+                var jsonOutputFormatter = new JsonOutputFormatter();
+                jsonOutputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+
+                var jsonInputFormatter = new JsonInputFormatter();
+                jsonInputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+
+                options.OutputFormatters.Insert(0, jsonOutputFormatter);
+                options.InputFormatters.Insert(0, jsonInputFormatter);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -170,6 +196,20 @@ namespace Template.WebApi
                     DisplayName = "My client application",
                     Secret = hasher.HashPassword(null, "secret_secret_secret"),
                     Type = ApplicationTypes.Confidential
+                });
+
+                database.SampleEntities.Add(new SampleEntity<string>() {
+                    Id = "1",
+                    Name = "firstEntity",
+                    DbData = "firstEntity DbData",
+                    Description = "firstEntity Description"
+                });
+                database.SampleEntities.Add(new SampleEntity<string>()
+                {
+                    Id = "2",
+                    Name = "secondEntity",
+                    DbData = "secondEntity DbData",
+                    Description = "secondEntity Description"
                 });
 
                 database.SaveChanges();

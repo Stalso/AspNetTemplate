@@ -1,0 +1,10 @@
+﻿
+<div ng-repeat="model in stockData" class="col-sm-12">
+    <div class="col-sm-1">
+      
+        <input  class="checkbox-inline"  type="checkbox" ng-model="model.isSelected">
+         </div>
+        <div class="col-sm-11">   
+            <pre >{{ model | json : spacing}}</pre>
+        </div>
+</div>

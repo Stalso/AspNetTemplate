@@ -18,9 +18,8 @@ namespace Template.WebApi.Controllers
     [Route("api/[controller]")]
     public class PrValuesController : Controller
     {
-        //private readonly UserManager<ApplicationUser> _userManager;
-        //private readonly SignInManager<ApplicationUser> _signInManager;
-        // GET: api/values
+    
+        // GET: api/prvalues
         [HttpGet]
         public IEnumerable<string> Get()
         {

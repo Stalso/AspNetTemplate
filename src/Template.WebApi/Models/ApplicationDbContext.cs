@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
+using Template.Domain.Entities;
 
 namespace Template.WebApi.Models
 {
@@ -92,5 +93,7 @@ namespace Template.WebApi.Models
         { }
 
         public DbSet<TApplication> Applications { get; set; }
+        //TODO remove testData
+        public DbSet<SampleEntity<string>> SampleEntities { get; set; }
     }
 }

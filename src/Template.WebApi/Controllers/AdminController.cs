@@ -14,12 +14,13 @@ namespace Template.WebApi.Controllers
     [Route("api/[controller]")]
     public class AdminController : Controller
     {
-        // GET: api/values
+        // GET: api/admin
       
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
+            
         }
 
         // GET api/values/5

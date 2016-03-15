@@ -22,6 +22,7 @@
          'forbiddenCtrl',
          'angularJwt',
          'io.utils',
+         'sampleEntsListDirective',
 
         // 3rd Party Modules
         'LocalStorageModule',

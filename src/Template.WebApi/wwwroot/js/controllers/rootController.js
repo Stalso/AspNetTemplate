@@ -10,7 +10,7 @@
             vm.logoff = function () {
                 Auth.logoff();
             };
-            
+            Auth.changeAuthData();
             $rootScope.$watch(function () { 
                 return Auth.userData
             },

@@ -3,7 +3,13 @@
 </div>
 
 <div class="row">
-    <div ng-repeat="model in controller.values">
+    <!--<div ng-repeat="model in controller.values">
         {{model}}
-    </div>
+    </div>-->
+
+    <sample-ents-list stock-data="controller.values"></sample-ents-list>
+</div>
+
+<div class="row">
+    <button class="btn btn-success pull-right" ng-click="controller.select()">Выбрать</button>
 </div>

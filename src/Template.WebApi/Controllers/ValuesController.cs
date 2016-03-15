@@ -3,18 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
+using Template.WebApi.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Template.DTO.ViewModels;
+using Newtonsoft.Json;
 
 namespace Template.WebApi.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        // GET: api/values
+        [FromServices]
+        public ApplicationDbContext<ApplicationUser, Application, IdentityRole, string> context { get; set; }
+        //// GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public ActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+
+
+            //JsonResult
+            var res = context.SampleEntities.Select(x => new SampleEntityViewModel()
+            {
+                Name = x.Name,
+                Description = x.Description
+            }).ToList();
+            res.Add(new SampleEntityViewModelA()
+            {
+                Name = "Fake",
+                Description = "Fake desc",
+                ADesc = "Fake desc A"
+            });
+            //return Json(res, new Newtonsoft.Json.JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects});
+            return Ok(res);
+
         }
+        // //GET: api/values
+        //[HttpGet]
+        // public JsonResult Get()
+        // {
+        //     //JsonResult
+        //     var res = context.SampleEntities.Select(x => new SampleEntityViewModel()
+        //     {
+        //         Name = x.Name,
+        //         Description = x.Description
+        //     }).ToList();
+        //     res.Add(new SampleEntityViewModelA()
+        //     {
+        //         Name = "Fake",
+        //         Description = "Fake desc",
+        //         ADesc = "Fake desc A"
+        //     });
+        //     //return Json(res, new Newtonsoft.Json.JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects});
+        //     return Json(res);
+
+        // }
 
         // GET api/values/5
         [HttpGet("{id}")]
