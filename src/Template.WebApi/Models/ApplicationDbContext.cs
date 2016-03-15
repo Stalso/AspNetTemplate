@@ -9,28 +9,6 @@ using Template.Domain.Entities;
 
 namespace Template.WebApi.Models
 {
-    //public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    //{
-    //    public DbSet<TempApplication> Applications { get; set; }
-    //    protected override void OnModelCreating(ModelBuilder builder)
-    //    {
-    //        base.OnModelCreating(builder);
-    //        // Customize the ASP.NET Identity model and override the defaults if needed.
-    //        // For example, you can rename the ASP.NET Identity table names and more.
-    //        // Add your customizations after calling base.OnModelCreating(builder);
-    //    }
-    //}
-    //public class ApplicationDbContext : OpenIddictContext<ApplicationUser, Application, IdentityRole, string>
-    //{
-    //    //public DbSet<TempApplication> Applications { get; set; }
-    //    protected override void OnModelCreating(ModelBuilder builder)
-    //    {
-    //        base.OnModelCreating(builder);
-    //        // Customize the ASP.NET Identity model and override the defaults if needed.
-    //        // For example, you can rename the ASP.NET Identity table names and more.
-    //        // Add your customizations after calling base.OnModelCreating(builder);
-    //    }
-    //}
     public static class ApplicationTypes
     {
         public const string Confidential = "confidential";

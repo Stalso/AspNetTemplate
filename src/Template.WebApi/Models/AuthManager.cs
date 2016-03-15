@@ -211,7 +211,7 @@ namespace Template.WebApi.Models
 
             return true;
         }
-        public  async Task<bool> IsConfidentialApplicationAsync(TApplication application) 
+        public virtual async Task<bool> IsConfidentialApplicationAsync(TApplication application) 
         {
             if (application == null)
             {
@@ -222,8 +222,7 @@ namespace Template.WebApi.Models
 
             return string.Equals(type, ApplicationTypes.Confidential, StringComparison.OrdinalIgnoreCase);
         }
-
-        public async Task<bool> IsPublicApplicationAsync(TApplication application)
+        public virtual async Task<bool> IsPublicApplicationAsync(TApplication application)
         {           
             if (application == null)
             {
@@ -273,6 +272,15 @@ namespace Template.WebApi.Models
             }
 
             return true;
+        }
+
+        public virtual  Task<string> GetApplicationRedirectUri(TApplication application)
+        {
+            return Store.GetRedirectUriAsync(application, CancellationToken);
+        }
+        public virtual Task<string> GetApplicationLogoutRedirectUri(TApplication application)
+        {
+            return Store.GetLogoutRedirectUriAsync(application, CancellationToken);
         }
     }
 }

@@ -64,7 +64,15 @@ namespace Template.WebApi.Models
 
             return Task.FromResult(application.RedirectUri);
         }
+        public virtual Task<string> GetLogoutRedirectUriAsync(TApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
 
+            return Task.FromResult(application.LogoutRedirectUri);
+        }
         public virtual Task<string> GetHashedSecretAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -75,6 +83,7 @@ namespace Template.WebApi.Models
             return Task.FromResult(application.Secret);
         }
        
+
 
     }
 }

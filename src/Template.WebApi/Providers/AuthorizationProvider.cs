@@ -16,7 +16,8 @@ using Microsoft.Extensions.OptionsModel;
 using Microsoft.Extensions.Configuration;
 
 namespace Template.WebApi.Providers {
-    public sealed class AuthorizationProvider : OpenIdConnectServerProvider {
+    public class AuthorizationProvider<TUser, TApplication> : OpenIdConnectServerProvider where TUser : class where TApplication : class
+    {
       
         public override async Task ValidateClientAuthentication(ValidateClientAuthenticationContext context) {
 
@@ -43,7 +44,7 @@ namespace Template.WebApi.Providers {
             //                         select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
 
             //var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
-            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
+            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
 
 
             // Retrieve the application details corresponding to the requested client_id.
@@ -109,7 +110,7 @@ namespace Template.WebApi.Providers {
             //                         select entity).SingleOrDefaultAsync(context.HttpContext.RequestAborted);
 
             //var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
-            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
+            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
             // Retrieve the application details corresponding to the requested client_id.
             //var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
             var application = await manager.FindApplicationByIdAsync(context.ClientId);
@@ -120,16 +121,16 @@ namespace Template.WebApi.Providers {
 
                 return;
             }
-
+            var redirectUri = await manager.GetApplicationRedirectUri(application);
             if (!string.IsNullOrEmpty(context.RedirectUri)) {
-                if (!string.Equals(context.RedirectUri, application.RedirectUri, StringComparison.Ordinal)) {
+                if (!string.Equals(context.RedirectUri, redirectUri, StringComparison.Ordinal)) {
                     context.Rejected(error: "invalid_client", description: "Invalid redirect_uri");
 
                     return;
                 }
             }
 
-            context.Validated(application.RedirectUri);
+            context.Validated(redirectUri);
         }
         //ToDO
         public override async Task ValidateClientLogoutRedirectUri(ValidateClientLogoutRedirectUriContext context) {
@@ -149,7 +150,7 @@ namespace Template.WebApi.Providers {
             //var application = await database.FindApplicationByLogoutRedirectUri(context.PostLogoutRedirectUri, context.HttpContext.RequestAborted);
             //var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
 
-            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
+            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
             // Retrieve the application details corresponding to the requested client_id.
             //var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
             var application = await manager.FindApplicationByLogoutRedirectUri(context.PostLogoutRedirectUri);
@@ -160,9 +161,10 @@ namespace Template.WebApi.Providers {
 
                 return;
             }
+            var postLogoutRedirectUri = await manager.GetApplicationLogoutRedirectUri(application);
             if (!string.IsNullOrEmpty(context.PostLogoutRedirectUri))
             {
-                if (!string.Equals(context.PostLogoutRedirectUri, application.LogoutRedirectUri, StringComparison.Ordinal))
+                if (!string.Equals(context.PostLogoutRedirectUri, postLogoutRedirectUri, StringComparison.Ordinal))
                 {
                     context.Rejected(error: "invalid_client", description: "Invalid redirect_uri");
 
@@ -201,7 +203,7 @@ namespace Template.WebApi.Providers {
                     description: "Only authorization code and refresh token grant types " +
                                  "are accepted by this authorization server");
             }
-            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
+            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
             // Note: though required by the OpenID Connect specification for the refresh token grant,
             // client authentication is not mandatory for non-confidential client applications in OAuth2.
             // To avoid breaking OAuth2 scenarios, OpenIddict uses a relaxed policy that allows
@@ -270,7 +272,7 @@ namespace Template.WebApi.Providers {
 
             var conf =  context.HttpContext.RequestServices.GetService(typeof(IConfiguration)) as IConfiguration;
             #region UserChecking
-            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
+            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
 
             var user = await manager.FindByNameAsync(context.UserName);
             if (user == null)
@@ -360,7 +362,7 @@ namespace Template.WebApi.Providers {
         }
         public override async Task GrantRefreshToken(GrantRefreshTokenContext context)
         {
-            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
+            var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
             var options = context.HttpContext.RequestServices.GetRequiredService<IOptions<IdentityOptions>>();
 
 
@@ -424,98 +426,98 @@ namespace Template.WebApi.Providers {
 
 
         #region OldGrants
-        public async Task GrantResourceOwnerCredentialsOld1(GrantResourceOwnerCredentialsContext context)
-        {
-            // Validate the credentials here (e.g using ASP.NET Identity).
-            // You can call Rejected() with an error code/description to reject
-            // the request and return a message to the caller.
-            //UserManager<ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-            var userManager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<ApplicationUser, Application>>();
-            ApplicationUser user = await userManager.FindByNameAsync(context.UserName);
+        //public async Task GrantResourceOwnerCredentialsOld1(GrantResourceOwnerCredentialsContext context)
+        //{
+        //    // Validate the credentials here (e.g using ASP.NET Identity).
+        //    // You can call Rejected() with an error code/description to reject
+        //    // the request and return a message to the caller.
+        //    //UserManager<ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+        //    var userManager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
+        //    ApplicationUser user = await userManager.FindByNameAsync(context.UserName);
 
-            var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
-            var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
+        //    var database = context.HttpContext.RequestServices.GetRequiredService<IAuthStore<ApplicationUser, Application>>();
+        //    var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
 
-            if (!(await userManager.CheckPasswordAsync(user, context.Password)))
-            {
-                context.Rejected(
-                     error: "invalid_grant",
-                    description: "The user name or password is incorrect."
-                    );
-                return;
-            }
+        //    if (!(await userManager.CheckPasswordAsync(user, context.Password)))
+        //    {
+        //        context.Rejected(
+        //             error: "invalid_grant",
+        //            description: "The user name or password is incorrect."
+        //            );
+        //        return;
+        //    }
 
-            //var identity = new ClaimsIdentity(OpenIdConnectServerDefaults.AuthenticationScheme);
-            var identity = new ClaimsIdentity(context.Options.AuthenticationScheme);
+        //    //var identity = new ClaimsIdentity(OpenIdConnectServerDefaults.AuthenticationScheme);
+        //    var identity = new ClaimsIdentity(context.Options.AuthenticationScheme);
 
-            // Note: the name identifier is always included in both identity and
-            // access tokens, even if an explicit destination is not specified.
-            identity.AddClaim(ClaimTypes.NameIdentifier, context.ClientId);
+        //    // Note: the name identifier is always included in both identity and
+        //    // access tokens, even if an explicit destination is not specified.
+        //    identity.AddClaim(ClaimTypes.NameIdentifier, context.ClientId);
 
-            //identity.AddClaim(ClaimTypes.Name, await manager.GetDisplayNameAsync(application),
-            //    Destinations.AccessToken,
-            //    Destinations.IdentityToken);
-            identity.AddClaim(ClaimTypes.Name, application.Id,
-                Destinations.AccessToken,
-                Destinations.IdentityToken);
+        //    //identity.AddClaim(ClaimTypes.Name, await manager.GetDisplayNameAsync(application),
+        //    //    Destinations.AccessToken,
+        //    //    Destinations.IdentityToken);
+        //    identity.AddClaim(ClaimTypes.Name, application.Id,
+        //        Destinations.AccessToken,
+        //        Destinations.IdentityToken);
 
-            // Create a new authentication ticket
-            // holding the application identity.
-            var ticket = new AuthenticationTicket(
-                new ClaimsPrincipal(identity),
-                new AuthenticationProperties(),
-                context.Options.AuthenticationScheme);
+        //    // Create a new authentication ticket
+        //    // holding the application identity.
+        //    var ticket = new AuthenticationTicket(
+        //        new ClaimsPrincipal(identity),
+        //        new AuthenticationProperties(),
+        //        context.Options.AuthenticationScheme);
 
-            ticket.SetResources(context.Request.GetResources());
-            ticket.SetScopes(context.Request.GetScopes());
+        //    ticket.SetResources(context.Request.GetResources());
+        //    ticket.SetScopes(context.Request.GetScopes());
 
-            context.Validated(ticket);
-            //OpenIdConnectConstants.Scopes
-        }
-        public  async Task GrantResourceOwnerCredentials12(GrantResourceOwnerCredentialsContext context)
-        {
-            // Validate the credentials here (e.g using ASP.NET Identity).
-            // You can call Rejected() with an error code/description to reject
-            // the request and return a message to the caller.
-            UserManager<ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-            ApplicationUser user = await userManager.FindByNameAsync(context.UserName);
-            if (!(await userManager.CheckPasswordAsync(user, context.Password)))
-            {
-                context.Rejected(
-                     error: "invalid_grant",
-                    description: "The user name or password is incorrect."
-                    );
-                return;
-            }
+        //    context.Validated(ticket);
+        //    //OpenIdConnectConstants.Scopes
+        //}
+        //public  async Task GrantResourceOwnerCredentials12(GrantResourceOwnerCredentialsContext context)
+        //{
+        //    // Validate the credentials here (e.g using ASP.NET Identity).
+        //    // You can call Rejected() with an error code/description to reject
+        //    // the request and return a message to the caller.
+        //    UserManager<ApplicationUser> userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+        //    ApplicationUser user = await userManager.FindByNameAsync(context.UserName);
+        //    if (!(await userManager.CheckPasswordAsync(user, context.Password)))
+        //    {
+        //        context.Rejected(
+        //             error: "invalid_grant",
+        //            description: "The user name or password is incorrect."
+        //            );
+        //        return;
+        //    }
 
 
 
-            var identity = new ClaimsIdentity(OpenIdConnectServerDefaults.AuthenticationScheme);
-            identity.AddClaim(ClaimTypes.NameIdentifier, "todo");
+        //    var identity = new ClaimsIdentity(OpenIdConnectServerDefaults.AuthenticationScheme);
+        //    identity.AddClaim(ClaimTypes.NameIdentifier, "todo");
 
-            // By default, claims are not serialized in the access and identity tokens.
-            // Use the overload taking a "destination" to make sure your claims
-            // are correctly inserted in the appropriate tokens.
-            identity.AddClaim("urn:customclaim", "value", "token id_token");
-            identity.AddClaim("urn:customclaim1", "value1", "token access_token");
+        //    // By default, claims are not serialized in the access and identity tokens.
+        //    // Use the overload taking a "destination" to make sure your claims
+        //    // are correctly inserted in the appropriate tokens.
+        //    identity.AddClaim("urn:customclaim", "value", "token id_token");
+        //    identity.AddClaim("urn:customclaim1", "value1", "token access_token");
 
-            var ticket = new AuthenticationTicket(
-                new ClaimsPrincipal(identity),
-                new AuthenticationProperties(),
-                context.Options.AuthenticationScheme);
+        //    var ticket = new AuthenticationTicket(
+        //        new ClaimsPrincipal(identity),
+        //        new AuthenticationProperties(),
+        //        context.Options.AuthenticationScheme);
 
-            // Call SetResources with the list of resource servers
-            // the access token should be issued for.
-            ticket.SetResources(new[] { "http://localhost:10450/" });
+        //    // Call SetResources with the list of resource servers
+        //    // the access token should be issued for.
+        //    ticket.SetResources(new[] { "http://localhost:10450/" });
 
-            // Call SetScopes with the list of scopes you want to grant
-            // (specify offline_access to issue a refresh token).
-            ticket.SetScopes(new[] { "profile", "offline_access" });
+        //    // Call SetScopes with the list of scopes you want to grant
+        //    // (specify offline_access to issue a refresh token).
+        //    ticket.SetScopes(new[] { "profile", "offline_access" });
 
-            context.Validated(ticket);
+        //    context.Validated(ticket);
 
-            // return null;
-        } 
+        //    // return null;
+        //} 
         #endregion
     }
 }

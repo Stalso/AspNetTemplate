@@ -80,23 +80,10 @@ namespace Template.WebApi
             }).AddEntityFrameworkStores<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>().AddDefaultTokenProviders();
             services.AddAuthorization(options => options.AddPolicy("ElevatedRights", policy =>
                    policy.RequireRole("Admin", "PowerUser", "BackupAdministrator")));
-            //services.AddAuthentication();
-
+           
             // Add framework services.
             services.AddInstance<IConfiguration>(Configuration);
             services.AddCaching();
-
-            //services.AddMvc().Configure<MvcOptions>(options =>
-            //{
-            //    var jsonOutputFormatter = new JsonOutputFormatter();
-            //    jsonOutputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
-
-            //    var jsonInputFormatter = new JsonInputFormatter();
-            //    jsonInputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
-
-            //     options.OutputFormatters.Insert(0, jsonOutputFormatter);
-            //    options.InputFormatters.Insert(0, jsonInputFormatter);
-            //}); 
 
             services.AddMvc(options =>
             {
@@ -163,7 +150,7 @@ namespace Template.WebApi
             app.UseOpenIdConnectServer(options =>
             {
                 
-                options.Provider = new AuthorizationProvider();
+                options.Provider = new AuthorizationProvider<ApplicationUser,Application>();
                 // Note: see AuthorizationController.cs for more
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;

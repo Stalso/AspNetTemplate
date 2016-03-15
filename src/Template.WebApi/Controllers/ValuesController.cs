@@ -33,7 +33,6 @@ namespace Template.WebApi.Controllers
                 Description = "Fake desc",
                 ADesc = "Fake desc A"
             });
-            //return Json(res, new Newtonsoft.Json.JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects});
             return Ok(res);
 
         }
