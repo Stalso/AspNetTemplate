@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net451": {
+      "wrappedProject": "../../src/Template.DTO/Template.DTO.csproj",
+      "bin": {
+        "assembly": "../../src/Template.DTO/obj/{configuration}/Template.DTO.dll",
+        "pdb": "../../src/Template.DTO/obj/{configuration}/Template.DTO.pdb"
+      }
+    }
+  }
+}
