@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Template.WebApi.Models
+namespace Template.OpenIdConnect
 {
     public class AuthManager<TUser, TApplication> : UserManager<TUser> where TUser : class where TApplication : class
     {
@@ -211,7 +211,7 @@ namespace Template.WebApi.Models
 
             return true;
         }
-        public virtual async Task<bool> IsConfidentialApplicationAsync(TApplication application) 
+        public virtual async Task<bool> IsConfidentialApplicationAsync(TApplication application)
         {
             if (application == null)
             {
@@ -223,7 +223,7 @@ namespace Template.WebApi.Models
             return string.Equals(type, ApplicationTypes.Confidential, StringComparison.OrdinalIgnoreCase);
         }
         public virtual async Task<bool> IsPublicApplicationAsync(TApplication application)
-        {           
+        {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
@@ -266,15 +266,15 @@ namespace Template.WebApi.Models
                     return false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-               
+
             }
 
             return true;
         }
 
-        public virtual  Task<string> GetApplicationRedirectUri(TApplication application)
+        public virtual Task<string> GetApplicationRedirectUri(TApplication application)
         {
             return Store.GetRedirectUriAsync(application, CancellationToken);
         }

@@ -7,26 +7,41 @@ using Template.WebApi.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Template.DTO.ViewModels;
 using Newtonsoft.Json;
+using Template.Domain;
+using Template.Domain.Repositories;
 
 namespace Template.WebApi.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        //[FromServices]
+        //public ApplicationDbContext<ApplicationUser, Application, IdentityRole, string> context { get; set; }
         [FromServices]
-        public ApplicationDbContext<ApplicationUser, Application, IdentityRole, string> context { get; set; }
+        public IUnitOfWork<string> UnitOfWork { get; set; }
         //// GET: api/values
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
 
 
             //JsonResult
-            var res = context.SampleEntities.Select(x => new SampleEntityViewModel()
+            //var res = context.SampleEntities.Select(x => new SampleEntityViewModel()
+            //{
+            //    Name = x.Name,
+            //    Description = x.Description
+            //}).ToList();
+            //var res = (await UnitOfWork.SampleEntityRepository.GetAllAsync()).Select(x => new SampleEntityViewModel()
+            //{
+            //    Name = x.Name,
+            //    Description = x.Description
+            //}).ToList();
+
+            var res = (await UnitOfWork.SampleEntityRepository.GetAsync(q => q.Select(x => new SampleEntityViewModel()
             {
                 Name = x.Name,
                 Description = x.Description
-            }).ToList();
+            }))).ToList();
             res.Add(new SampleEntityViewModelA()
             {
                 Name = "Fake",

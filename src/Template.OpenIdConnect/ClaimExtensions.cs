@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Template.WebApi.Models
+namespace Template.OpenIdConnect
 {
     public static class ClaimExtensions
     {
@@ -92,5 +92,3 @@ namespace Template.WebApi.Models
         }
     }
 }
-
-

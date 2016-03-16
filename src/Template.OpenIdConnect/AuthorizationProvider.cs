@@ -1,25 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Extensions;
+﻿using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Server;
-using Microsoft.Data.Entity;
-using Microsoft.Extensions.DependencyInjection;
-using Template.WebApi.Models;
-using System.Security.Claims;
 using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Http.Authentication;
 using Microsoft.AspNet.Identity;
-using Newtonsoft.Json.Schema;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.OptionsModel;
-using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace Template.WebApi.Providers {
+namespace Template.OpenIdConnect
+{
     public class AuthorizationProvider<TUser, TApplication> : OpenIdConnectServerProvider where TUser : class where TApplication : class
     {
-      
-        public override async Task ValidateClientAuthentication(ValidateClientAuthenticationContext context) {
+        private List<string> Resources { get; set; }
+        public override async Task ValidateClientAuthentication(ValidateClientAuthenticationContext context)
+        {
 
             // Note: client authentication is not mandatory for non-confidential client applications like mobile apps
             // (except when using the client credentials grant type) but this authorization server uses a safer policy
@@ -50,7 +48,8 @@ namespace Template.WebApi.Providers {
             // Retrieve the application details corresponding to the requested client_id.
             //var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
             var application = await manager.FindApplicationByIdAsync(context.ClientId);
-            if (application == null) {
+            if (application == null)
+            {
                 context.Rejected(
                     error: "invalid_client",
                     description: "Application not found in the database: ensure that your client_id is correct");
@@ -92,16 +91,17 @@ namespace Template.WebApi.Providers {
             //}
             if (await manager.IsConfidentialApplicationAsync(application))
             {
-                if(!await manager.ValidateSecretAsync(application,context.ClientSecret))
+                if (!await manager.ValidateSecretAsync(application, context.ClientSecret))
                     context.Rejected(
                         error: "invalid_client",
                         description: "Invalid credentials: ensure that you specified a correct client_secret");
 
             }
             context.Validated();
-        } 
+        }
         //TODO       
-        public override async Task ValidateClientRedirectUri(ValidateClientRedirectUriContext context) {
+        public override async Task ValidateClientRedirectUri(ValidateClientRedirectUriContext context)
+        {
             //var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>();
 
             //// Retrieve the application details corresponding to the requested client_id.
@@ -114,7 +114,8 @@ namespace Template.WebApi.Providers {
             // Retrieve the application details corresponding to the requested client_id.
             //var application = await database.FindApplicationByIdAsync(context.ClientId, context.HttpContext.RequestAborted);
             var application = await manager.FindApplicationByIdAsync(context.ClientId);
-            if (application == null) {
+            if (application == null)
+            {
                 context.Rejected(
                     error: "invalid_client",
                     description: "Application not found in the database: ensure that your client_id is correct");
@@ -122,8 +123,10 @@ namespace Template.WebApi.Providers {
                 return;
             }
             var redirectUri = await manager.GetApplicationRedirectUri(application);
-            if (!string.IsNullOrEmpty(context.RedirectUri)) {
-                if (!string.Equals(context.RedirectUri, redirectUri, StringComparison.Ordinal)) {
+            if (!string.IsNullOrEmpty(context.RedirectUri))
+            {
+                if (!string.Equals(context.RedirectUri, redirectUri, StringComparison.Ordinal))
+                {
                     context.Rejected(error: "invalid_client", description: "Invalid redirect_uri");
 
                     return;
@@ -133,7 +136,8 @@ namespace Template.WebApi.Providers {
             context.Validated(redirectUri);
         }
         //ToDO
-        public override async Task ValidateClientLogoutRedirectUri(ValidateClientLogoutRedirectUriContext context) {
+        public override async Task ValidateClientLogoutRedirectUri(ValidateClientLogoutRedirectUriContext context)
+        {
             //var database = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>();
 
             //// Note: ValidateClientLogoutRedirectUri is not invoked when post_logout_redirect_uri is null.
@@ -173,18 +177,21 @@ namespace Template.WebApi.Providers {
             }
             context.Validated();
         }
-        public override Task MatchEndpoint(MatchEndpointContext context) {
+        public override Task MatchEndpoint(MatchEndpointContext context)
+        {
             // Note: by default, OpenIdConnectServerHandler only handles authorization requests made to the authorization endpoint.
             // This context handler uses a more relaxed policy that allows extracting authorization requests received at
             // /connect/authorize/accept and /connect/authorize/deny (see AuthorizationController.cs for more information).
             if (context.Options.AuthorizationEndpointPath.HasValue &&
-                context.Request.Path.StartsWithSegments(context.Options.AuthorizationEndpointPath)) {
+                context.Request.Path.StartsWithSegments(context.Options.AuthorizationEndpointPath))
+            {
                 context.MatchesAuthorizationEndpoint();
             }
 
             return Task.FromResult<object>(null);
         }
-        public override Task ProfileEndpoint(ProfileEndpointContext context) {
+        public override Task ProfileEndpoint(ProfileEndpointContext context)
+        {
             // Note: by default, OpenIdConnectServerHandler automatically handles userinfo requests and directly
             // writes the JSON response to the response stream. This sample uses a custom ProfileController that
             // handles userinfo requests: context.SkipToNextMiddleware() is called to bypass the default
@@ -193,11 +200,13 @@ namespace Template.WebApi.Providers {
 
             return Task.FromResult<object>(null);
         }
-        public override async Task ValidateTokenRequest(ValidateTokenRequestContext context) {
+        public override async Task ValidateTokenRequest(ValidateTokenRequestContext context)
+        {
             // Note: OpenIdConnectServerHandler supports authorization code, refresh token, client credentials
             // and resource owner password credentials grant types but this authorization server uses a safer policy
             // rejecting the last two ones. You may consider relaxing it to support the ROPC or client credentials grant types.
-            if (!context.Request.IsAuthorizationCodeGrantType() && !context.Request.IsRefreshTokenGrantType() && !context.Request.IsPasswordGrantType()) {
+            if (!context.Request.IsAuthorizationCodeGrantType() && !context.Request.IsRefreshTokenGrantType() && !context.Request.IsPasswordGrantType())
+            {
                 context.Rejected(
                     error: "unsupported_grant_type",
                     description: "Only authorization code and refresh token grant types " +
@@ -270,7 +279,7 @@ namespace Template.WebApi.Providers {
         public override async Task GrantResourceOwnerCredentials(GrantResourceOwnerCredentialsContext context)
         {
 
-            var conf =  context.HttpContext.RequestServices.GetService(typeof(IConfiguration)) as IConfiguration;
+            //var conf = context.HttpContext.RequestServices.GetService(typeof(IConfiguration)) as IConfiguration;
             #region UserChecking
             var manager = context.HttpContext.RequestServices.GetRequiredService<AuthManager<TUser, TApplication>>();
 
@@ -322,7 +331,7 @@ namespace Template.WebApi.Providers {
                 await manager.ResetAccessFailedCountAsync(user);
             }
 
-            
+
             if (context.Request.ContainsScope(OpenIdConnectConstants.Scopes.Profile) &&
                !context.Request.ContainsScope(OpenIdConnectConstants.Scopes.Email) &&
                 string.Equals(await manager.GetUserNameAsync(user),

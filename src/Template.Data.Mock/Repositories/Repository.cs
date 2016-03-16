@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,16 @@ namespace Template.Data.Mock.Repositories
 {
     public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey> where TKey : IEquatable<TKey>
     {
-        private DbSet<TEntity> _collection { get; set; }
-        public Repository(DbSet<TEntity> collection)
+        private DbContext _context;
+        private DbSet<TEntity> _set;
+
+        public Repository(DbContext context)
         {
-            _collection = collection;
+            _context = context;
+        }
+        protected DbSet<TEntity> Set
+        {
+            get { return _set ?? (_set = _context.Set<TEntity>()); }
         }
         public Task AddAsync(List<TEntity> entities, CancellationToken cancellationToke)
         {
@@ -82,14 +89,23 @@ namespace Template.Data.Mock.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<TEntity>> GetAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryShaper, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TEntity>> GetAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryShaper, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var query = queryShaper(Set);
+            return await query.ToArrayAsync(cancellationToken);
+            //var retval = queryShaper(Entities.AsQueryable());
+            //return Task.FromResult<IEnumerable<TEntity>>(retval);
         }
 
-        public Task<TResult> GetAsync<TResult>(Func<IQueryable<TEntity>, TResult> queryShaper, CancellationToken cancellationToken)
+        public async Task<TResult> GetAsync<TResult>(Func<IQueryable<TEntity>, TResult> queryShaper, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+
+            var set = Set;
+            var query = queryShaper;
+            var factory = Task<TResult>.Factory;
+            return await factory.StartNew(() => query(set), cancellationToken);
+            //var retval = queryShaper(Entities.AsQueryable());
+            //return Task.FromResult<TResult>(retval);
         }
 
         public Task SaveChangesAsync(CancellationToken cancellationToken)

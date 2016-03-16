@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using AspNet.Security.OpenIdConnect.Extensions;
 using Template.WebApi.Extensions;
 using NWebsec.Middleware;
-using Template.WebApi.Providers;
 using Template.WebApi.Models;
 using Microsoft.Data.Entity;
 using Microsoft.AspNet.Http;
@@ -24,6 +23,10 @@ using AspNet.Security.OpenIdConnect.Server;
 using Template.Domain.Entities;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Formatters;
+using Template.OpenIdConnect;
+using Template.OpenIdConnect.EntityFramework;
+using Template.Domain;
+using Template.Data.Mock;
 
 namespace Template.WebApi
 {
@@ -66,6 +69,11 @@ namespace Template.WebApi
             services.AddScoped<IAuthStore<ApplicationUser,Application>, AuthStore<ApplicationUser, Application, IdentityRole, 
                 ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>, string>>();
             services.AddScoped<AuthManager<ApplicationUser, Application>>();
+
+            //var i = new MockUnitOfWork<string, ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>(null);
+            //IUnitOfWork
+            services.AddScoped<IUnitOfWork<string>, MockUnitOfWork<string, ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>>();
+
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password = new PasswordOptions()
@@ -161,7 +169,7 @@ namespace Template.WebApi
                 options.TokenEndpointPath = "/token";
                 //options.AccessTokenLifetime = new TimeSpan(0, 0, 5);
                 //options.RefreshTokenLifetime = new TimeSpan(0, 0, 10);
-                //options.Iden
+               
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:
                 // options.SigningCredentials.AddCertificate(certificate);

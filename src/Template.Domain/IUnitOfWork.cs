@@ -8,6 +8,6 @@ namespace Template.Domain
 {
     public interface IUnitOfWork<TKey> : IDisposable where TKey : IEquatable<TKey>
     {
-        ISampleEntityRepository<TKey> SampleEntityRepository { get; set; }
+        ISampleEntityRepository<TKey> SampleEntityRepository { get;  }
     }
 }

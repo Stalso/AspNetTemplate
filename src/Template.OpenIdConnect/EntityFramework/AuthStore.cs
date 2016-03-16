@@ -6,14 +6,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Template.WebApi.Models
+namespace Template.OpenIdConnect.EntityFramework
 {
     public class AuthStore<TUser, TApplication, TRole, TContext, TKey> : UserStore<TUser, TRole, TContext, TKey>, IAuthStore<TUser, TApplication>
-        where TUser : IdentityUser<TKey>
-        where TApplication : Application
-        where TRole : IdentityRole<TKey>
-        where TContext : DbContext
-        where TKey : IEquatable<TKey>
+       where TUser : IdentityUser<TKey>
+       where TApplication : IdentityApplication<TKey>
+       where TRole : IdentityRole<TKey>
+       where TContext : DbContext
+       where TKey : IEquatable<TKey>
     {
         public AuthStore(TContext context)
             : base(context)
@@ -27,7 +27,9 @@ namespace Template.WebApi.Models
 
         public virtual Task<TApplication> FindApplicationByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            return Applications.SingleOrDefaultAsync(application => application.Id == identifier, cancellationToken);
+            // TODO Id problem
+            return Applications.SingleOrDefaultAsync(application => application.Id.ToString() == identifier, cancellationToken);
+            //return Applications.SingleOrDefaultAsync(application => EqualityComparer<TKey>.Default.Equals(application.Id,identifier), cancellationToken);
         }
 
         public virtual Task<TApplication> FindApplicationByLogoutRedirectUri(string url, CancellationToken cancellationToken)
@@ -82,7 +84,7 @@ namespace Template.WebApi.Models
 
             return Task.FromResult(application.Secret);
         }
-       
+
 
 
     }

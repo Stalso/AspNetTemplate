@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Template.Data.Mock.Repositories
 {
     public class SampleEntityRepository<TKey> : Repository<SampleEntity<TKey>, TKey>, ISampleEntityRepository<TKey> where TKey : IEquatable<TKey>
     {
-        public SampleEntityRepository(DbSet<SampleEntity<TKey>> collection) : base(collection)
+        public SampleEntityRepository(DbContext context) : base(context)
         {
             
         }

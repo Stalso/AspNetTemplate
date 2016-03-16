@@ -10,10 +10,10 @@
   },
 
   "frameworks": {
-    "net451": { }
+    "dnx451": { }
   },
   "dependencies": {
-    "Microsoft.EntityFrameworkCore": "1.0.0-rc2-20075",
+    "EntityFramework.Core": "7.0.0-rc1-final",
     "Template.Domain": "1.0.0-*"
   }
 }
