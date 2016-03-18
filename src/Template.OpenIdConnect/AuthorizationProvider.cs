@@ -432,6 +432,10 @@ namespace Template.OpenIdConnect
             ticket.SetScopes(context.Request.GetScopes());
             context.Validated(ticket);
         }
+        //public override Task ValidationEndpoint(ValidationEndpointContext context)
+        //{
+        //    return base.ValidationEndpoint(context);
+        //}
 
 
         #region OldGrants

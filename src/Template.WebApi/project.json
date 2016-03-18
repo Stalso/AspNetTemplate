@@ -27,7 +27,10 @@
     "Microsoft.AspNet.Cors": "6.0.0-rc1-final",
     "Template.Domain": "1.0.0-*",
     "Template.OpenIdConnect": "1.0.0-*",
-    "Template.Data.Mock": "1.0.0-*"
+    "Template.Data.Mock": "1.0.0-*",
+    "Microsoft.AspNet.Owin": "1.0.0-rc1-final",
+    "Microsoft.AspNet.SignalR.Core": "2.2.0",
+    "Microsoft.AspNet.SignalR.Owin": "1.2.2"
   },
 
   "commands": {

@@ -20,6 +20,7 @@
                            Roles: decodedToken.role,
                            IsExpired: jwtHelper.isTokenExpired(Auth.userData.access_token),
                            decoded_token: decodedToken,
+                           access_token:Auth.userData.access_token,
                            refresh_token: Auth.userData.refresh_token
                        };
                    }

@@ -23,9 +23,10 @@
          'angularJwt',
          'io.utils',
          'sampleEntsListDirective',
-
+         'SignalRService',
         // 3rd Party Modules
         'LocalStorageModule',
+        'SignalR'
     ]).config(['$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', function ($httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
         localStorageServiceProvider.setNotify(true, true);
         jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$http', 'localStorageService', 'Auth', '$q', function (jwtHelper, $http, localStorageService, Auth, $q) {

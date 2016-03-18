@@ -1,8 +1,13 @@
 ﻿using System;
-using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
-
+using System.Collections.Generic;
+using Microsoft.AspNet.Builder;
+using Microsoft.Owin.Builder;
+using Owin;
+using System.Threading.Tasks;
 namespace Template.WebApi.Extensions {
+   
+    using AppFunc = Func<IDictionary<string, object>, Task>;
     public static class AppBuilderExtensions {
         public static IApplicationBuilder UseWhen(this IApplicationBuilder app,
             Func<HttpContext, bool> condition, Action<IApplicationBuilder> configuration) {
@@ -34,6 +39,31 @@ namespace Template.WebApi.Extensions {
                     return next(context);
                 };
             });
+        }
+
+        public static IApplicationBuilder UseAppBuilder(
+          this IApplicationBuilder app,
+          Action<IAppBuilder> configure)
+        {
+            app.UseOwin(addToPipeline =>
+            {
+                addToPipeline(next =>
+                {
+                    var appBuilder = new AppBuilder();
+                    appBuilder.Properties["builder.DefaultApp"] = next;
+
+                    configure(appBuilder);
+
+                    return appBuilder.Build<AppFunc>();
+                });
+            });
+
+            return app;
+        }
+
+        public static void UseSignalR2(this IApplicationBuilder app)
+        {
+            app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
         }
     }
 }

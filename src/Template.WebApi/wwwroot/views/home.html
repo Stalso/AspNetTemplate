@@ -6,6 +6,22 @@
 
 <div class="row">
    
-    <sample-ents-list stock-data="controller.data"></sample-ents-list>
+    <!--<sample-ents-list stock-data="controller.data"></sample-ents-list>-->
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="controller.sendFreeMessage()">FreeMessage</button>
+            </span>
+            <input type="text" class="form-control" placeholder="Free message ..." ng-model="controller.freeMessage">
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="controller.sendProtectedMessage()">ProtectedMessage</button>
+            </span>
+            <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.protMessage">            
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
     
 </div>

@@ -4,23 +4,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
+using Template.Domain;
+using Template.Domain.Repositories;
+using Template.DTO.ViewModels;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Template.WebApi.Controllers
 {
+   
+
     [Authorize(Policy = "ElevatedRights")]
     //[Authorize()]
     [Route("api/[controller]")]
     public class AdminController : Controller
     {
+        [FromServices]
+        public IUnitOfWork<string> UnitOfWork { get; set; }
         // GET: api/admin
-      
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
-            
+            var res = (await UnitOfWork.SampleEntityRepository.GetAsync(q => q.Select(x => new SampleEntityViewModel()
+            {
+                Name = x.Name,
+                Description = x.Description
+            }))).ToList();
+            res.Add(new SampleEntityViewModelA()
+            {
+                Name = "Fake",
+                Description = "Fake desc",
+                ADesc = "Fake desc A"
+            });
+            return Ok(res);
+
         }
 
         // GET api/values/5
