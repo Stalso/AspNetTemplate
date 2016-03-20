@@ -63,7 +63,8 @@ namespace Template.WebApi.Extensions {
 
         public static void UseSignalR2(this IApplicationBuilder app)
         {
-            app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
+            //app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
+            app.UseAppBuilder(appBuilder => appBuilder.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration() { EnableDetailedErrors = true }));
         }
     }
 }

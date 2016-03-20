@@ -121,42 +121,47 @@ namespace Template.WebApi
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-           
+
 
             // Create a new branch where the registered middleware will be executed only for API calls.            
 
-            app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api")) || context.Request.Path.StartsWithSegments(new PathString("/signalr")), branch =>
-            {
-                branch.UseJwtBearerAuthentication(options =>
+            //app.UseWhen(context => (context.Request.Path.StartsWithSegments(new PathString("/api")) 
+            //    || context.Request.Path.StartsWithSegments(new PathString("/signalr"))) && 
+            //    !context.Request.Path.StartsWithSegments(new PathString("/signalr/negotiate")) &&
+            //    !context.Request.Path.StartsWithSegments(new PathString("/signalr/connect")) , branch =>
+            app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api"))
+                || context.Request.Path.StartsWithSegments(new PathString("/signalr")), branch =>
                 {
-
-                    options.AutomaticAuthenticate = true;
-                    options.AutomaticChallenge = true;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;                    
-                    options.TokenValidationParameters.ValidAudiences = new[] { "http://localhost:10450/", "http://localhost:10377/" };                    
-                    options.Authority = "http://localhost:10450/";
-                    options.Events = new JwtBearerEvents()
+                    branch.UseJwtBearerAuthentication(options =>
                     {
-                        OnReceivingToken = tokenContext =>
+
+                        options.AutomaticAuthenticate = true;
+                        options.AutomaticChallenge = true;
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters.ValidateLifetime = true;
+                        options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                        options.TokenValidationParameters.ValidAudiences = new[] { "http://localhost:10450/", "http://localhost:10377/" };
+                        options.Authority = "http://localhost:10450/";
+                        options.Events = new JwtBearerEvents()
                         {
+                            OnReceivingToken = tokenContext =>
+                            {
                             //return Task.FromResult(true);
                             // Note: when the token is missing from the query string,
                             // context.Token is null and the JWT bearer middleware will
                             // automatically try to retrieve it from the Authorization header.
                             var isSignalR = tokenContext.HttpContext.Request.Path.ToString().StartsWith("/signalr");
-                            if (isSignalR)
-                            {
-                                tokenContext.Token = tokenContext.Request.Query["access_token"];
+                                if (isSignalR)
+                                {
+                                    tokenContext.Token = tokenContext.Request.Query["access_token"];
+                                }
+
+                                return Task.FromResult(0);
                             }
 
-                            return Task.FromResult(0);
-                        }
-
-                    };
+                        };
+                    });
                 });
-            });
 
 
             //app.UseJwtBearerAuthentication(options =>
