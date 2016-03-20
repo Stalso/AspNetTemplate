@@ -40,11 +40,42 @@
                     console.log(err);
                 });
             };
-
+            
             TemplateHub.sendProtectedMessage = function (data) {
                 vm.protMessage = data;
             };
 
+            vm.disconnectHub = function () {
+                TemplateHub.hub.disconnect();
+                //TemplateHub.hub.connect();
+               
+            }
+            vm.connectHub = function () {
+                TemplateHub.changeToken();
+                TemplateHub.hub.connect();
+            }
+            vm.makeBadConnection = function () {
+                TemplateHub.changeOnBadToken();
+                TemplateHub.hub.connect();
+                //TemplateHub.hub.connect().then(function (data) {
+                //    console.log(data);
+                //}, function (err) {
+                //    //TemplateHub.hub.disconnect();
+                //    //setTimeout(function () {
+                //        TemplateHub.changeToken();
+                //        TemplateHub.hub.connect();
+                //    //}, 1);
+                //    //TemplateHub.hub.disconnect().then(function (data) {
+                //    //    console.log(data);
+                //    //}, function (err) {
+                //    //    console.log(err);
+                //    //    TemplateHub.changeToken();
+                //    //    TemplateHub.hub.connect();
+                //    //});
+                   
+                //});
+                //TemplateHub.hub.connect();
+            }
             
         }]);  
 })();

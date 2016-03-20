@@ -23,5 +23,14 @@
             <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.protMessage">            
         </div><!-- /input-group -->
     </div><!-- /.col-lg-6 -->
-    
+   
 </div>
+<div class="row">
+    <div class="col-md-6" style="margin-top:20px">
+        <div class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" ng-click="controller.disconnectHub()">Disconnect</button>
+            <button type="button" class="btn btn-default" ng-click="controller.connectHub()">Connect</button>
+            <button type="button" class="btn btn-default" ng-click="controller.makeBadConnection()">BadConnection</button>
+        </div>
+        </div>
+    </div>
