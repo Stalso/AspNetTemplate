@@ -6,7 +6,7 @@ using Microsoft.Owin.Builder;
 using Owin;
 using System.Threading.Tasks;
 namespace Template.WebApi.Extensions {
-   
+    using System.Net;
     using AppFunc = Func<IDictionary<string, object>, Task>;
     public static class AppBuilderExtensions {
         public static IApplicationBuilder UseWhen(this IApplicationBuilder app,
@@ -63,6 +63,8 @@ namespace Template.WebApi.Extensions {
 
         public static void UseSignalR2(this IApplicationBuilder app)
         {
+            //var listener = (HttpListener)app.Properties[typeof(HttpListener).FullName];
+            //listener.AuthenticationSchemes = AuthenticationSchemes.Ntlm;
             //app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
             app.UseAppBuilder(appBuilder => appBuilder.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration() { EnableDetailedErrors = true }));
         }

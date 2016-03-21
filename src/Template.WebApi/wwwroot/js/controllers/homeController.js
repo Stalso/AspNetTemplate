@@ -37,7 +37,7 @@
                 TemplateHub.hub.SendProtMessage(vm.protMessage).then(function (data) {
                     console.log(data);
                 }, function (err) {
-                    console.log(err);
+                    console.log('Controller log' + err);
                 });
             };
             
@@ -48,34 +48,28 @@
             vm.disconnectHub = function () {
                 TemplateHub.hub.disconnect();
                 //TemplateHub.hub.connect();
-               
-            }
+
+            };
             vm.connectHub = function () {
-                TemplateHub.changeToken();
+                //TemplateHub.changeToken();
+                TemplateHub.changeQueryToken();
                 TemplateHub.hub.connect();
-            }
+            };
             vm.makeBadConnection = function () {
-                TemplateHub.changeOnBadToken();
+                TemplateHub.changeOnBadQueryToken();
                 TemplateHub.hub.connect();
-                //TemplateHub.hub.connect().then(function (data) {
-                //    console.log(data);
-                //}, function (err) {
-                //    //TemplateHub.hub.disconnect();
-                //    //setTimeout(function () {
-                //        TemplateHub.changeToken();
-                //        TemplateHub.hub.connect();
-                //    //}, 1);
-                //    //TemplateHub.hub.disconnect().then(function (data) {
-                //    //    console.log(data);
-                //    //}, function (err) {
-                //    //    console.log(err);
-                //    //    TemplateHub.changeToken();
-                //    //    TemplateHub.hub.connect();
-                //    //});
-                   
-                //});
-                //TemplateHub.hub.connect();
-            }
+            };
+            vm.changeOnBadToken = function () {
+                TemplateHub.changeOnBadQueryToken();
+            };
+            vm.changeToken = function () {
+                TemplateHub.changeQueryToken();
+            };
+            vm.clearQueryToken = function () {
+                TemplateHub.clearQueryToken();
+                TemplateHub.hub.connect();
+            };
+            
             
         }]);  
 })();

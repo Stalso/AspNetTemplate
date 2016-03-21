@@ -136,6 +136,7 @@ namespace Template.WebApi
                     {
 
                         options.AutomaticAuthenticate = true;
+                        //options.AuthenticationScheme = 
                         options.AutomaticChallenge = true;
                         options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters.ValidateLifetime = true;
@@ -230,10 +231,10 @@ namespace Template.WebApi
                 //options.AuthorizationEndpointPath = "/auth";
                 //options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
-                //options.AccessTokenLifetime = new TimeSpan(0, 0, 3);
+                options.AccessTokenLifetime = new TimeSpan(10,10,10,10);
                
-                //options.IdentityTokenLifetime = new TimeSpan(0, 0, 5);
-                //options.RefreshTokenLifetime = new TimeSpan(0, 0, 10);
+                //options.IdentityTokenLifetime = new TimeSpan(0, 0, 3);
+                //options.RefreshTokenLifetime = new TimeSpan(0, 0, 5);
                
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:
