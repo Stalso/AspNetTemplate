@@ -1,13 +1,13 @@
 ﻿<div class="row">
     <div class="col-sm-12">
-    <h1>{{controller.title}}</h1>
-        </div>
+        <h1>{{controller.title}}</h1>
+    </div>
 </div>
 
 <div class="row">
-   
+
     <!--<sample-ents-list stock-data="controller.data"></sample-ents-list>-->
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="input-group">
             <span class="input-group-btn">
                 <button class="btn btn-default" type="button" ng-click="controller.sendFreeMessage()">FreeMessage</button>
@@ -15,25 +15,81 @@
             <input type="text" class="form-control" placeholder="Free message ..." ng-model="controller.freeMessage">
         </div><!-- /input-group -->
     </div><!-- /.col-lg-6 -->
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="input-group">
             <span class="input-group-btn">
                 <button class="btn btn-default" type="button" ng-click="controller.sendProtectedMessage()">ProtectedMessage</button>
             </span>
-            <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.protMessage">            
+            <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.protMessage">
         </div><!-- /input-group -->
     </div><!-- /.col-lg-6 -->
-   
+    <div class="col-md-12">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="controller.sendAdminMessage()">AdminMessage</button>
+            </span>
+            <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.adminMessage">
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+
 </div>
+
 <div class="row">
-    <div class="col-md-6" style="margin-top:20px">
+    <div class="col-md-12" style="margin-top:20px">
         <div class="btn-group" role="group" aria-label="...">
-            <button type="button" class="btn btn-default" ng-click="controller.disconnectHub()">Disconnect</button>
             <button type="button" class="btn btn-default" ng-click="controller.connectHub()">Connect</button>
-            <button type="button" class="btn btn-default" ng-click="controller.makeBadConnection()">BadConnection</button>
+            <button type="button" class="btn btn-default" ng-click="controller.disconnectHub()">Disconnect</button>
+
             <button type="button" class="btn btn-default" ng-click="controller.changeToken()">GoodToken</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeOnUserToken()">UserToken</button>
             <button type="button" class="btn btn-default" ng-click="controller.changeOnBadToken()">BadToken</button>
             <button type="button" class="btn btn-default" ng-click="controller.clearQueryToken()">ClearToken</button>
-        </div>
+
+            <button type="button" class="btn btn-default" ng-click="controller.changeConnectionToken()">Good ConnectionToken</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeOnUserConnectionToken()">User ConnectionToken</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeOnBadConnectionToken()">Bad ConnectionToken</button>
+            <button type="button" class="btn btn-default" ng-click="controller.clearConnectionToken()">Clear ConnectionToken</button>
+
         </div>
     </div>
+</div>
+
+<div class="row">
+
+    <!--<sample-ents-list stock-data="controller.data"></sample-ents-list>-->
+    <div class="col-md-12">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="controller.sendPrFreeMessage()">FreeMessage</button>
+            </span>
+            <input type="text" class="form-control" placeholder="Free message ..." ng-model="controller.freePrMessage">
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+    <div class="col-md-12">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="controller.sendPrProtectedMessage()">ProtectedMessage</button>
+            </span>
+            <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.protPrMessage">
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+    <div class="col-md-12">
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="controller.sendPrAdminMessage()">AdminMessage</button>
+            </span>
+            <input type="text" class="form-control" placeholder="Protected message..." ng-model="controller.adminPrMessage">
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+
+</div>
+
+<div class="row">
+    <div class="col-md-12" style="margin-top:20px">
+        <div class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" ng-click="controller.connectPrHub()">Connect</button>
+            <button type="button" class="btn btn-default" ng-click="controller.disconnectPrHub()">Disconnect</button>
+
+        </div>
+    </div>
+</div>

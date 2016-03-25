@@ -29,8 +29,8 @@
     "Template.OpenIdConnect": "1.0.0-*",
     "Template.Data.Mock": "1.0.0-*",
     "Microsoft.AspNet.Owin": "1.0.0-rc1-final",
-    "Microsoft.AspNet.SignalR.Core": "2.2.0",
-    "Microsoft.AspNet.SignalR.Owin": "1.2.2"
+    "Microsoft.AspNet.SignalR.Server": "3.0.0-rc1-final",
+    "Microsoft.AspNet.WebSockets.Server": "1.0.0-rc1-final"
   },
 
   "commands": {

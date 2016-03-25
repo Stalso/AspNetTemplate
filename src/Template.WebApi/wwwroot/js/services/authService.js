@@ -3,7 +3,7 @@
 
     angular
         .module('authService', [])
-        .factory('Auth', ['$http', '$location', '$route', 'localStorageService', 'jwtHelper', '$q', 'ngAuthSettings', function ($http, $location, $route, localStorageService, jwtHelper, $q, ngAuthSettings) {
+        .factory('Auth', ['$http', '$location', '$route', 'localStorageService', 'jwtHelper', '$q', 'ngAuthSettings', '$rootScope', function ($http, $location, $route, localStorageService, jwtHelper, $q, ngAuthSettings, $rootScope) {
 
             var service = {
                 //userData:{},
@@ -18,7 +18,8 @@
                 setAuthData: setAuthData,
                 clearAuthData: clearAuthData,
                 changeAuthData: changeAuthData,
-                getAuthDataWithRefresh: getAuthDataWithRefresh
+                getAuthDataWithRefresh: getAuthDataWithRefresh,
+                access_token_changed: 'access_token changed'
 
             };          
 
@@ -27,7 +28,7 @@
             // login action. Gets access_token
             function getToken(data) {
                 console.log("login getToken enetered")
-                clearAuthData();
+                //clearAuthData();
 
                 var postdata = 'grant_type=password&username=' + data.username + '&password=' + data.password + '&client_id=' + ngAuthSettings.clientId + '&scope=offline_access roles profile';
                 
@@ -40,6 +41,7 @@
                 }, function (err) {
                     console.log(err);
                     return $q.reject(err);
+                    clearAuthData();
                 });
 
             };
@@ -88,7 +90,7 @@
                
                 if (localStorageService.get('authData')) {
                     clearAuthData();                    
-                    $route.reload()
+                    $route.reload();
 
                 }
             };
@@ -122,6 +124,7 @@
             };
 
             // Get auth data from local storage with refresh
+            // succes only if token recieved
             function getAuthDataWithRefresh() {
                 
               
@@ -147,20 +150,20 @@
 
                             }, function (err) {
                                 console.log('getAuthDataWithRefresh: bad access token after token refresh' + err);
-                                return err;
+                                return null;
                             });
                         }
                     }
 
                     else {
-                        deffered.reject('No refresh token');
+                        deffered.reject(null);
                         console.log('getAuthDataWithRefresh error: No refresh token');
                         return deffered.promise;
                     }
                     //    data.refresh_token;
                 }
                 else {
-                    deffered.reject('No auth data token');
+                    deffered.reject(null);
                     console.log('getAuthDataWithRefresh error: No auth data');
                     return deffered.promise;
                 }
@@ -182,15 +185,35 @@
             function getAccessTokenWithRefresh() {
                 console.log('getAccessTokenWithRefresh started: ');
                 return getAuthDataWithRefresh().then(function (data) {
-                    console.log('getAccessTokenWithRefresh success: ' + data.access_token)
+                    //console.log('getAccessTokenWithRefresh success: ' + data.access_token)
                     return data.access_token;
                 }, function (err) {
-                    console.log('getAccessTokenWithRefresh error: ' + err)
+                    //console.log('getAccessTokenWithRefresh error: ' + err)
                     return $q.reject(err);
-                   //return err;
+                  
                });            
             };
+            
+            function compareAuthData(userData)
+            {
+                var currentData = localStorageService.get('authData');
+                if (!currentData && !userData)
+                    return true;
+                if ((currentData && !userData) || (!currentData && userData))
+                {
+                    return false;
+                }
 
+                if (!currentData.access_token && !userData.access_token)
+                    return true;
+                
+                if (currentData.access_token === userData.access_token) {
+                    return true;
+                }
+                else
+                    return false;              
+
+            }
             // Set auth data to local storage
             function setAuthData(data) {
 
@@ -202,21 +225,26 @@
                         username: tokenInfo.unique_name,
 
                     };
-                    console.log('setAuthData: present data set' + userdata);
+                    //console.log('setAuthData: present data set' + userdata);
+                    var tokensAreEqual = compareAuthData(userdata);
                     localStorageService.set('authData', userdata);
+                    if(!tokensAreEqual)
+                        $rootScope.$broadcast('access_token changed');
                 }
                 else {
-                    console.log('setAuthData: No data to set' + userdata);
+                    //console.log('setAuthData: No data to set' + userdata);
                     clearAuthData();
                 }
             };
 
             // Clear auth data from local storage
             function clearAuthData() {
-
-                console.log('clearAuthData enetered');
+                var tokensAreEqual = compareAuthData(null);
+                //console.log('clearAuthData enetered');
                 localStorageService.remove('authData');
-                console.log('clearAuthData finished');
+                if(!tokensAreEqual)
+                    $rootScope.$broadcast('access_token changed');
+                //console.log('clearAuthData finished');
                 
             };           
 

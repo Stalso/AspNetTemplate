@@ -2,8 +2,8 @@
 using Microsoft.AspNet.Http;
 using System.Collections.Generic;
 using Microsoft.AspNet.Builder;
-using Microsoft.Owin.Builder;
-using Owin;
+//using Microsoft.Owin.Builder;
+//using Owin;
 using System.Threading.Tasks;
 namespace Template.WebApi.Extensions {
     using System.Net;
@@ -41,32 +41,32 @@ namespace Template.WebApi.Extensions {
             });
         }
 
-        public static IApplicationBuilder UseAppBuilder(
-          this IApplicationBuilder app,
-          Action<IAppBuilder> configure)
-        {
-            app.UseOwin(addToPipeline =>
-            {
-                addToPipeline(next =>
-                {
-                    var appBuilder = new AppBuilder();
-                    appBuilder.Properties["builder.DefaultApp"] = next;
+        //public static IApplicationBuilder UseAppBuilder(
+        //  this IApplicationBuilder app,
+        //  Action<IAppBuilder> configure)
+        //{
+        //    app.UseOwin(addToPipeline =>
+        //    {
+        //        addToPipeline(next =>
+        //        {
+        //            var appBuilder = new AppBuilder();
+        //            appBuilder.Properties["builder.DefaultApp"] = next;
 
-                    configure(appBuilder);
+        //            configure(appBuilder);
 
-                    return appBuilder.Build<AppFunc>();
-                });
-            });
+        //            return appBuilder.Build<AppFunc>();
+        //        });
+        //    });
 
-            return app;
-        }
+        //    return app;
+        //}
 
-        public static void UseSignalR2(this IApplicationBuilder app)
-        {
-            //var listener = (HttpListener)app.Properties[typeof(HttpListener).FullName];
-            //listener.AuthenticationSchemes = AuthenticationSchemes.Ntlm;
-            //app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
-            app.UseAppBuilder(appBuilder => appBuilder.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration() { EnableDetailedErrors = true }));
-        }
+        //public static void UseSignalR2(this IApplicationBuilder app)
+        //{
+        //    //var listener = (HttpListener)app.Properties[typeof(HttpListener).FullName];
+        //    //listener.AuthenticationSchemes = AuthenticationSchemes.Ntlm;
+        //    //app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
+        //    app.UseAppBuilder(appBuilder => appBuilder.MapSignalR(new Microsoft.AspNet.SignalR.HubConfiguration() { EnableDetailedErrors = true }));
+        //}
     }
 }

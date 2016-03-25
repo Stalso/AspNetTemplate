@@ -47,7 +47,7 @@ namespace Template.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
 
-         
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
@@ -60,13 +60,14 @@ namespace Template.WebApi
                             builder.Build();
                         });
             });
-            
+
             services.AddEntityFramework()
                .AddInMemoryDatabase()
-               .AddDbContext<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>(options => {
+               .AddDbContext<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>(options =>
+               {
                    options.UseInMemoryDatabase();
                });
-            services.AddScoped<IAuthStore<ApplicationUser,Application>, AuthStore<ApplicationUser, Application, IdentityRole, 
+            services.AddScoped<IAuthStore<ApplicationUser, Application>, AuthStore<ApplicationUser, Application, IdentityRole,
                 ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>, string>>();
             services.AddScoped<AuthManager<ApplicationUser, Application>>();
 
@@ -89,11 +90,11 @@ namespace Template.WebApi
             services.AddAuthentication();
             services.AddAuthorization(options => options.AddPolicy("ElevatedRights", policy =>
                    policy.RequireRole("Admin", "PowerUser", "BackupAdministrator").Build()));
-           
+
             // Add framework services.
             services.AddInstance<IConfiguration>(Configuration);
             services.AddCaching();
-
+            services.AddSignalR();
             services.AddMvc(options =>
             {
                 var jsonOutputFormatter = new JsonOutputFormatter();
@@ -129,40 +130,48 @@ namespace Template.WebApi
             //    || context.Request.Path.StartsWithSegments(new PathString("/signalr"))) && 
             //    !context.Request.Path.StartsWithSegments(new PathString("/signalr/negotiate")) &&
             //    !context.Request.Path.StartsWithSegments(new PathString("/signalr/connect")) , branch =>
+            //var path = context.Request.Path;
+
+
+            //app.UseWhen(context => (context.Request.Path.StartsWithSegments(new PathString("/api"))
+            //    || context.Request.Path.StartsWithSegments(new PathString("/signalr"))) && !(context.Request.Path.StartsWithSegments(new PathString("/signalr"))
+            //    && context.Request.Path.ToString().Contains("abort")), branch =>
             app.UseWhen(context => context.Request.Path.StartsWithSegments(new PathString("/api"))
                 || context.Request.Path.StartsWithSegments(new PathString("/signalr")), branch =>
+            {
+                branch.UseJwtBearerAuthentication(options =>
                 {
-                    branch.UseJwtBearerAuthentication(options =>
-                    {
 
-                        options.AutomaticAuthenticate = true;
-                        //options.AuthenticationScheme = 
-                        options.AutomaticChallenge = true;
-                        options.RequireHttpsMetadata = false;
-                        options.TokenValidationParameters.ValidateLifetime = true;
-                        options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                        options.TokenValidationParameters.ValidAudiences = new[] { "http://localhost:10450/", "http://localhost:10377/" };
-                        options.Authority = "http://localhost:10450/";
-                        options.Events = new JwtBearerEvents()
+                    options.AutomaticAuthenticate = true;
+                    //options.AuthenticationScheme = 
+                    options.AutomaticChallenge = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                    options.TokenValidationParameters.ValidAudiences = new[] { "http://localhost:10450/", "http://localhost:10377/" };
+                    options.Authority = "http://localhost:10450/";
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnReceivingToken = tokenContext =>
                         {
-                            OnReceivingToken = tokenContext =>
-                            {
                             //return Task.FromResult(true);
                             // Note: when the token is missing from the query string,
                             // context.Token is null and the JWT bearer middleware will
                             // automatically try to retrieve it from the Authorization header.
+                            var path = tokenContext.HttpContext.Request.Path;
                             var isSignalR = tokenContext.HttpContext.Request.Path.ToString().StartsWith("/signalr");
-                                if (isSignalR)
-                                {
-                                    tokenContext.Token = tokenContext.Request.Query["access_token"];
-                                }
-
-                                return Task.FromResult(0);
+                            //var isSignalR = path.StartsWithSegments("/signalr") && !path.ToString().Contains("abort");
+                            if (isSignalR)
+                            {
+                                tokenContext.Token = tokenContext.Request.Query["access_token"];
                             }
 
-                        };
-                    });
+                            return Task.FromResult(0);
+                        }
+
+                    };
                 });
+            });
 
 
             //app.UseJwtBearerAuthentication(options =>
@@ -222,7 +231,7 @@ namespace Template.WebApi
             {
 
                 options.Provider = new AuthorizationProvider<ApplicationUser, Application>();
-           
+
                 // Note: see AuthorizationController.cs for more
                 // information concerning ApplicationCanDisplayErrors.
                 options.ApplicationCanDisplayErrors = true;
@@ -231,21 +240,24 @@ namespace Template.WebApi
                 //options.AuthorizationEndpointPath = "/auth";
                 //options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
-                options.AccessTokenLifetime = new TimeSpan(10,10,10,10);
-               
+                options.AccessTokenLifetime = new TimeSpan(10, 10, 10, 10);
+
                 //options.IdentityTokenLifetime = new TimeSpan(0, 0, 3);
                 //options.RefreshTokenLifetime = new TimeSpan(0, 0, 5);
-               
+
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:
                 // options.SigningCredentials.AddCertificate(certificate);
             });
-            app.UseSignalR2();
+            //app.UseSignalR2();
+            app.UseWebSockets();
+
+            app.UseSignalR();
             app.UseMvc();
             //
             var hasher = new PasswordHasher<Application>();
             using (var database = app.ApplicationServices.GetService<ApplicationDbContext<ApplicationUser, Application, IdentityRole, string>>())
-            {              
+            {
                 database.Applications.Add(new Application
                 {
                     Id = "myPublicClient",
@@ -260,7 +272,8 @@ namespace Template.WebApi
                     Type = ApplicationTypes.Confidential
                 });
 
-                database.SampleEntities.Add(new SampleEntity<string>() {
+                database.SampleEntities.Add(new SampleEntity<string>()
+                {
                     Id = "1",
                     Name = "firstEntity",
                     DbData = "firstEntity DbData",
@@ -276,7 +289,7 @@ namespace Template.WebApi
 
                 database.SaveChanges();
                 CreateUser(app).Wait();
-            }        
+            }
         }
         public async Task CreateUser(IApplicationBuilder app)
         {

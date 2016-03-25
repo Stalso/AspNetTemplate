@@ -10,26 +10,27 @@ namespace Template.WebApi.Hubs
 {
     public class JwtAuthorizeAttribute : AuthorizeAttribute
     {
-        public override bool AuthorizeHubConnection(HubDescriptor hubDescriptor, IRequest request)
-        {
-            return base.AuthorizeHubConnection(hubDescriptor, request);
-        }
-        public override bool AuthorizeHubMethodInvocation(IHubIncomingInvokerContext hubIncomingInvokerContext, bool appliesToMethod)
-        {
-            return base.AuthorizeHubMethodInvocation(hubIncomingInvokerContext, appliesToMethod);
-        }
-        protected override bool UserAuthorized(IPrincipal user)
-        {
-            //var res = base.UserAuthorized(user);
-            //if (!res)
-            //{
-            //    throw new HttpException("403", "Not authenticated");
-            //}
-            return base.UserAuthorized(user);
-        }
+        //public override bool AuthorizeHubConnection(HubDescriptor hubDescriptor, IRequest request)
+        //{
+        //    return base.AuthorizeHubConnection(hubDescriptor, request);
+        //}
+        //public override bool AuthorizeHubMethodInvocation(IHubIncomingInvokerContext hubIncomingInvokerContext, bool appliesToMethod)
+        //{
+        //    return base.AuthorizeHubMethodInvocation(hubIncomingInvokerContext, appliesToMethod);
+        //}
+        //protected override bool UserAuthorized(IPrincipal user)
+        //{
+        //    //var res = base.UserAuthorized(user);
+        //    //if (!res)
+        //    //{
+        //    //    throw new HttpException("403", "Not authenticated");
+        //    //}
+        //    return base.UserAuthorized(user);
+        //}
 
     }
     [HubName("msg")]
+    //[JwtAuthorize]
     public class MessageHub : Hub
     {
 
@@ -40,15 +41,25 @@ namespace Template.WebApi.Hubs
         //    //this.Clients.Client("free message" + message);
         //    this.Clients.All.sendFreeMessage("free message" + message);
         //}
+        private string time {
+            get {
+                return DateTime.Now.ToLongTimeString();
+            }
+        }
         public void SendFreeMessage(string message)
         {           
-            this.Clients.All.sendFreeMessage("free server message " + message);
+            this.Clients.All.sendFreeMessage(time);
         }
 
         [JwtAuthorize]
         public void SendProtMessage(string message)
         {
-            this.Clients.All.sendProtectedMessage("prot server message " + message);
+            this.Clients.All.sendProtectedMessage(time);
+        }
+        [JwtAuthorize(Roles = "Admin")]
+        public void SendAdminMessage(string message)
+        {
+            this.Clients.All.sendAdminMessage(time);
         }
 
         public override Task OnConnected()
@@ -59,28 +70,91 @@ namespace Template.WebApi.Hubs
         {
             return base.OnDisconnected(stopCalled);
         }
-        //protected override async Task OnConnected(HttpRequest request, string connectionId)
+    }
+    [HubName("prot")]
+    [JwtAuthorize]
+    public class ProtHub : Hub
+    {
+        private string time
+        {
+            get
+            {
+                return DateTime.Now.ToLongTimeString();
+            }
+        }
+        //public void SendFreeMessage(dynamic message)
         //{
-        //    var identity = request.HttpContext.User.Identity;
-        //    var status = identity.IsAuthenticated ? "Authenticated" : "Unauthenticated";
+        //    //Clients.Group("auth").authhello(message); 
 
-        //    Logger.LogInformation($"{status} connection {connectionId} has just connected.");
-
-        //    await Connection.Send(connectionId, $"Connection is {status}");
-
-        //    if (identity.IsAuthenticated)
-        //    {
-        //        await Connection.Send(connectionId, $"Authenticated username: {identity.Name}");
-        //    }
+        //    //this.Clients.Client("free message" + message);
+        //    this.Clients.All.sendFreeMessage("free message" + message);
         //}
+        public void SendFreeMessage(string message)
+        {
+            this.Clients.All.sendFreeMessage(time);
+        }
 
-        //protected override async Task OnReceived(HttpRequest request, string connectionId, string data)
+        //[JwtAuthorize]
+        public void SendProtMessage(string message)
+        {
+            this.Clients.All.sendProtectedMessage(time);
+        }
+        [JwtAuthorize(Roles = "Admin")]
+        public void SendAdminMessage(string message)
+        {
+            this.Clients.All.sendAdminMessage(time);
+        }
+
+        public override Task OnConnected()
+        {
+            return base.OnConnected();
+        }
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            return base.OnDisconnected(stopCalled);
+        }
+    }
+    [HubName("admin")]
+    [JwtAuthorize(Roles = "Admin")]
+    public class AdminHub : Hub
+    {
+        private string time
+        {
+            get
+            {
+                return DateTime.Now.ToLongTimeString();
+            }
+        }
+        //public void SendFreeMessage(dynamic message)
         //{
-        //    var identity = request.HttpContext.User.Identity;
-        //    var status = identity.IsAuthenticated ? "authenticated" : "unauthenticated";
-        //    var name = identity.IsAuthenticated ? identity.Name : "client";
+        //    //Clients.Group("auth").authhello(message); 
 
-        //    await Connection.Send(connectionId, $"Received an {status} message from {name}: {data}");
+        //    //this.Clients.Client("free message" + message);
+        //    this.Clients.All.sendFreeMessage("free message" + message);
         //}
+        public void SendFreeMessage(string message)
+        {
+            this.Clients.All.sendFreeMessage(time);
+        }
+
+        //[JwtAuthorize]
+        public void SendProtMessage(string message)
+        {
+            this.Clients.All.sendProtectedMessage(time);
+        }
+       
+        public void SendAdminMessage(string message)
+        {
+            this.Clients.All.sendAdminMessage(time);
+        }
+
+        public override Task OnConnected()
+        {
+            return base.OnConnected();
+        }
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            return base.OnDisconnected(stopCalled);
+        }
     }
 }
