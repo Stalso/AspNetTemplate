@@ -1,6 +1,6 @@
-﻿angular.module('SignalR', [])
+﻿angular.module('c-SignalR', [])
     .constant('$', window.jQuery)
-        .factory('Hub', ['$', '$q', '$rootScope', function ($, $q, $rootScope) {
+        .factory('HubConnection', ['$', '$q', '$rootScope', function ($, $q, $rootScope) {
             //This will allow same connection to be used for all Hubs
             //It also keeps connection as singleton.
 
@@ -13,7 +13,7 @@
             //jsonp
             //stateChanged
             //autoConnect
-            
+
             ///////////////// security
             // getToken - gets access token from server or storage
             // getConnectionToken - gets token which is used by connection
@@ -22,7 +22,7 @@
             // forbiddenHandler - 403 handler
             // tokenChangedLogic - in options
             // tokenChangedEventHandler - in connection
-           
+
             ///////////
             /////////////////////
 
@@ -35,7 +35,7 @@
             // list of connections
             var globalConnections = [];
 
-           
+
 
             // creates new connection
             // used in getConnection
@@ -89,7 +89,8 @@
                     connection.setConnectionToken = options.securityTokenOptions.setConnectionToken;
                     connection.unAuthHandler = options.securityTokenOptions.unAuthHandler;
                     connection.forbiddenHandler = options.securityTokenOptions.forbiddenHandler;
-                   
+
+                    // must disconnect, ask token, set new token , and reconnect
                     if (connection.tokenChangedLogic) {
                         connection.tokenChangedLogic = function () {
                             return $q.when(options.securityTokenOptions.tokenChangedLogic());
@@ -118,13 +119,14 @@
 
 
 
-            return function (connectionOptions)
-            {
+            return function (connectionOptions) {
                 var Connection = this;
 
                 var connection = initNewConnection(connectionOptions);
 
-                Connection.disconnect = function () {                    
+                Connection.connection = connection;
+
+                Connection.disconnect = function () {
                     connection.stop();
                 };
 
@@ -132,6 +134,21 @@
                     return connection.getToken
                         && connection.getConnectionToken
                             && connection.setConnectionToken;
+                }
+                Connection.getToken = function () {
+                    return connection.getToken();
+                }
+
+                Connection.getConnectionToken = function () {
+                    return connection.getConnectionToken();
+                }
+               
+                Connection.setTokenAndStart = function (token)
+                {
+                    if (connection.setConnectionToken)
+                        connection.setConnectionToken(token);
+                    connection.tokenChangedEventBlocked = false;
+                    return connection.start(startOptions);
                 }
 
                 Connection.connect = function () {
@@ -143,177 +160,72 @@
                         startOptions.jsonp = connectionOptions.jsonp;
 
                     if (connection.getToken) {
+                        connection.tokenChangedEventBlocked = true;
                         return connection.getToken().then(function (token) {
-                            if (connection.setConnectionToken)
-                                connection.setConnectionToken(token);
-                            return connection.start(startOptions);
+                            return Connection.setTokenAndStart(token);
+                        }, function (err) {
+                            return Connection.setTokenAndStart(null);
                         });
-                    }                        
+                    }
                     else {
                         return connection.start(startOptions);
                     }
                 };
 
+                Connection.createHubProxy = function (hubName) {
+                    return connection.createHubProxy(hubName);
+                }
+
                 if (connectionOptions && connectionOptions.hubs && connectionOptions.hubs.length) {
                     for (var i = 0; i < hubs.lenghts; i++) {
-
+                        Connection.hubs.push(new Hub(this, hubs[i].hubName, hubs[i].options));
                     }
                 }
 
                 if (!connectionOptions ||
-                        (connectionOptions && (connectionOptions.autoConnect === undefined || connectionOptions.autoConnect))) {
+                       (connectionOptions && (connectionOptions.autoConnect === undefined || connectionOptions.autoConnect))) {
                     Connection.promise = Connection.connect();
                 }
-               
+
 
                 return Connection;
 
             }
 
-
-            return function (hubName, options) {
+            // listeners
+            function Hub(Connection,hubName,options) {
                 var Hub = this;
+                Hub.connection = Connection;
 
-                Hub.connection = getConnection(options);
-                Hub.proxy = Hub.connection.createHubProxy(hubName);
+                Hub.proxy = Connection.createHubProxy(hubName);
 
                 Hub.on = function (event, fn) {
                     Hub.proxy.on(event, fn);
                 };
+
                 Hub.invoke = function (method, args) {
                     return Hub.proxy.invoke.apply(Hub.proxy, arguments)
                 };
 
                 Hub.disconnect = function () {
-                    //delete Hub.connection.qs;
-                    Hub.connection.stop();
+                    Connection.disconnect();
                 };
 
-                // getToken - gets access token from server or storage
-                // getConnectionToken - gets token which is used by connection
-                // setConnectionToken() - set token which is used by connection
-                // unAuthHandler - 401 handler
-                // forbiddenHandler - 403 handler
-                //Hub.securityTokenOptions = options.securityTokenOptions;
-                var currentConnection = Hub.connection;
-                if (currentConnection.getToken)
-                    Hub.getToken = function () { return currentConnection.getToken(); }
-                if (currentConnection.getConnectionToken)
-                    Hub.getConnectionToken = function () { return currentConnection.getConnectionToken() };
-                if (currentConnection.setConnectionToken)
-                    Hub.setConnectionToken = function (token) { return currentConnection.setConnectionToken(token) }
-                if (options.securityTokenOptions) {
-                    //Hub.getToken = options.securityTokenOptions.getToken;
-                    //Hub.getConnectionToken = options.securityTokenOptions.getConnectionToken;
-                    //Hub.setConnectionToken = options.securityTokenOptions.setConnectionToken;
-                    //Hub.unAuthHandler = options.securityTokenOptions.unAuthHandler;
-                    //Hub.forbiddenHandler = options.securityTokenOptions.forbiddenHandler;
-
-                    Hub.unAuthHandler = options.securityTokenOptions.unAuthHandler;
-                    Hub.forbiddenHandler = options.securityTokenOptions.forbiddenHandler;
-                }
-                Hub.validateSecurityOptions = function () {
-
-                    return Hub.getToken
-                        && Hub.getConnectionToken
-                            && Hub.setConnectionToken;
-
-                }
                 Hub.connect = function () {
-
-                    var startOptions = {};
-                    if (options.transport) startOptions.transport = options.transport;
-                    if (options.jsonp) startOptions.jsonp = options.jsonp;
-
-                    //if (Hub.securityTokenOptions) {
-                    if (Hub.getToken) {
-                        return Hub.getToken().then(function (token) {
-                            if (Hub.setConnectionToken)
-                                Hub.setConnectionToken(token);
-                            return Hub.connection.start(startOptions);
-                        });
-                    }
-                        //}
-                    else {
-                        return Hub.connection.start(startOptions);
-                    }
-                };
-
-                if (options && options.listeners) {
-                    Object.getOwnPropertyNames(options.listeners)
-                    .filter(function (propName) {
-                        return typeof options.listeners[propName] === 'function';
-                    })
-                        .forEach(function (propName) {
-                            Hub.on(propName, options.listeners[propName]);
-                        });
+                    return Connection.connect();
                 }
 
-                Hub.secureInvoke = function (Hub, args) {
-
-                    var res = Hub.invoke.apply(Hub, args);
-                    // 401
-                    return res.then(function (data) {
-                        console.log(data);
-                    }, function (err, data) {
-                        console.log('Error while sending message');
-                        if (Hub.connection.unAuthHandler) {
-                            Hub.connection.unAuthHandler();
-                        }
-
-
-                    });
-                }
-                //////////////////////////
-
-                if (options && options.methods) {
-                    angular.forEach(options.methods, function (method) {
-                        Hub[method] = function () {
-
-                            var args = $.makeArray(arguments);
-                            args.unshift(method);
-
-                            //var callPromise;
-                            if (Hub.validateSecurityOptions()) {
-                                return Hub.getToken().then(function (newToken) {
-
-                                    var oldToken = null;
-
-                                    oldToken = Hub.getConnectionToken();
-
-                                    var tokensAreEqual = false;
-                                    if ((!newToken && !oldToken) || newToken === oldToken) {
-                                        tokensAreEqual = true;
-                                    }
-                                    if (!tokensAreEqual) {
-                                        Hub.disconnect();
-                                        //Hub.securityTokenOptions.setConnectionToken(newToken);
-                                        setTimeout(function () {
-
-                                            Hub.connect().then(function (data) {
-                                                return Hub.secureInvoke(Hub, args);
-                                                //return Hub.invoke.apply(Hub, args);
-                                            });
-                                        }, 1);
-                                    }
-                                    else {
-                                        return Hub.secureInvoke(Hub, args);
-                                    }
-
-                                });
-                            }
-                            else
-                                return Hub.secureInvoke(Hub, args);
-                        };
-                    });
-                }
-                if (options && options.queryParams) {
-                    Hub.connection.qs = options.queryParams;
+                if (options && options.stateChanged) {
+                    Connection.connection.stateChanged(options.stateChanged);
                 }
                 if (options && options.errorHandler) {
-                    Hub.connection.error(options.errorHandler);
-                    //if (Hub.securityTokenOptions)
-                    //{
+                    Connection.connection.error(options.errorHandler);
+                   
+                }
+                if (options && (options.unAuthHandler || options.forbiddenHandler)) {
+                    Hub.unAuthHandler = options.unAuthHandler;
+                    Hub.forbiddenHandler = options.forbiddenHandler;
+
                     Hub.connection.error(function (error, data) {
                         if (error.context.status === 401
                             && Hub.unAuthHandler) {
@@ -323,28 +235,71 @@
                             && Hub.forbiddenHandler) {
                             Hub.forbiddenHandler();
                         }
-
                     });
-                    //}
-                    //if (Hub.securityTokenOptions)
-                    //{
-                    //    if( Hub.securityTokenOptions.unAuthHandler)
-                    //        Hub.connection.error(Hub.securityTokenOptions.unAuthHandler);
-                    //    if (Hub.securityTokenOptions.forbiddenHandler)
-                    //        Hub.connection.error(Hub.securityTokenOptions.forbiddenHandler);
-                    //}
                 }
-                if (options && options.stateChanged) {
-                    Hub.connection.stateChanged(options.stateChanged);
+                // register all listeners
+                if (options && options.listeners) {
+                    Object.getOwnPropertyNames(options.listeners).filter(function (propName) {
+                        return typeof options.listeners[propName] === 'function';
+                    }).forEach(function (propName) {
+                        Hub.on(propName, options.listeners[propName]);
+                    });
                 }
 
-                //Adding additional property of promise allows to access it in rest of the application.
-                if (options.autoConnect === undefined || options.autoConnect) {
-                    Hub.promise = Hub.connect();
+                Hub.secureInvoke = function (Hub, args) {
+
+                    var res = Hub.invoke.apply(Hub, args);
+                    return res.then(function (data) {
+                        console.log(data);
+                    }, function (err, data) {
+                        console.log('Error while sending message');
+                        if (Connection.connection.unAuthHandler) {
+                            Connection.connection.unAuthHandler();
+                        }
+                    });
                 }
 
-                return Hub;
-            };
+                Hub.checkSecurityOptions = function () {
+                    return Connection.checkSecurityOptions();
+                }
+
+                if (options && options.methods) {
+                    angular.forEach(options.methods, function (method) {
+                        Hub[method] = function () {
+                            var args = $.makeArray(arguments);
+                            args.unshift(method);
+
+                            //var callPromise;
+                            if (Hub.checkSecurityOptions()) {
+                                Hub.Connection.tokenChangedEventBlocked = true;
+                                return Connection.getToken.then(function (newToken) {
+                                    // check by my self and cast token logic if needed
+                                    var oldToken = null;
+                                    oldToken = Connection.getConnectionToken();
+                                    var tokensAreEqual = false;
+                                    if ((!newToken && !oldToken) || newToken === oldToken) {
+                                        tokensAreEqual = true;
+                                    }
+                                    if (!tokensAreEqual)
+                                        return Connection.tokenChangedLogic(newToken);
+                                    else
+                                        return newToken;
+                                    
+                                    
+                                }).then(function (data) {
+                                    Hub.Connection.tokenChangedEventBlocked = false;
+                                    return Hub.secureInvoke(Hub, args);
+                                });
+                            }
+                            else
+                                return Hub.secureInvoke(Hub, args);
+                        };
+                    });
+                }
+            }
+
+
+            
         }]);
 
 // Common.js package manager support (e.g. ComponentJS, WebPack)

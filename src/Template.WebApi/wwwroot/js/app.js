@@ -24,6 +24,8 @@
          'io.utils',
          'sampleEntsListDirective',
          'SignalRService',
+         'c-SignalR',
+         'c-SignalRService',
         // 3rd Party Modules
         'LocalStorageModule',
         'SignalR'
