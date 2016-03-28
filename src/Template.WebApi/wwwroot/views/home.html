@@ -37,27 +37,54 @@
 <div class="row">
     <div class="col-md-12" style="margin-top:20px">
         <div class="btn-group" role="group" aria-label="...">
+
             <button type="button" class="btn btn-default" ng-click="controller.connectHub()">Connect</button>
             <button type="button" class="btn btn-default" ng-click="controller.disconnectHub()">Disconnect</button>
+
+        </div>
+    </div>
+
+    <div class="col-md-12" style="margin-top:20px">
+        <div class="btn-group" role="group" aria-label="...">
 
             <button type="button" class="btn btn-default" ng-click="controller.changeToken()">GoodToken</button>
             <button type="button" class="btn btn-default" ng-click="controller.changeOnUserToken()">UserToken</button>
             <button type="button" class="btn btn-default" ng-click="controller.changeOnBadToken()">BadToken</button>
-            <button type="button" class="btn btn-default" ng-click="controller.clearQueryToken()">ClearToken</button>
-
-            <button type="button" class="btn btn-default" ng-click="controller.changeConnectionToken()">Good ConnectionToken</button>
-            <button type="button" class="btn btn-default" ng-click="controller.changeOnUserConnectionToken()">User ConnectionToken</button>
-            <button type="button" class="btn btn-default" ng-click="controller.changeOnBadConnectionToken()">Bad ConnectionToken</button>
-            <button type="button" class="btn btn-default" ng-click="controller.clearConnectionToken()">Clear ConnectionToken</button>
+            <button type="button" class="btn btn-default" ng-click="controller.clearToken()">ClearToken</button>
+            <button type="button" class="btn btn-default" ng-click="controller.rejectToken()">GetTokenRejection</button>
 
         </div>
     </div>
+
+    <div class="col-md-12" style="margin-top:20px">
+        <div class="btn-group" role="group" aria-label="...">
+
+            <button type="button" class="btn btn-default" ng-click="controller.changeTokenArt()">GoodTokenArt</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeOnUserTokenArt()">UserTokenArt</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeOnBadTokenArt()">BadTokenArt</button>
+            <button type="button" class="btn btn-default" ng-click="controller.clearTokenArt()">ClearTokenArt</button>
+            <button type="button" class="btn btn-default" ng-click="controller.rejectTokenArt()">GetTokenRejectionArt</button>
+
+        </div>
+    </div>
+
+    <div class="col-md-12" style="margin-top:20px">
+        <div class="btn-group" role="group" aria-label="...">
+
+            <button type="button" class="btn btn-default" ng-click="controller.changeQsToken()">GoodTokenQs</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeQsOnUserToken()">UserTokenQs</button>
+            <button type="button" class="btn btn-default" ng-click="controller.changeQsOnBadToken()">BadTokenQs</button>
+            <button type="button" class="btn btn-default" ng-click="controller.clearQsToken()">ClearTokenQs</button>
+
+        </div>
+    </div>
+
 </div>
 
 <div class="row">
 
     <!--<sample-ents-list stock-data="controller.data"></sample-ents-list>-->
-    <div class="col-md-12">
+    <div class="col-md-12"  style="margin-top:40px">
         <div class="input-group">
             <span class="input-group-btn">
                 <button class="btn btn-default" type="button" ng-click="controller.sendPrFreeMessage()">FreeMessage</button>
@@ -87,6 +114,7 @@
 <div class="row">
     <div class="col-md-12" style="margin-top:20px">
         <div class="btn-group" role="group" aria-label="...">
+
             <button type="button" class="btn btn-default" ng-click="controller.connectPrHub()">Connect</button>
             <button type="button" class="btn btn-default" ng-click="controller.disconnectPrHub()">Disconnect</button>
 

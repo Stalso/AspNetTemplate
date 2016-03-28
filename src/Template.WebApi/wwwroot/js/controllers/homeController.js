@@ -3,22 +3,9 @@
 
     angular
         .module('homeCtrl',[])
-        .controller('homeController', ['$location', 'TemplateHub', function ($location, TemplateHub) {
-
-
-          
+        .controller('homeController', ['$location', 'TemplateConnection', function ($location, TemplateConnection) {
 
             var vm = this;
-
-
-            //var event = new CustomEvent('build', { 'detail': 'zz' });
-
-            //vm.addEventListener('build', function (e) { console.log(e.detail + ' 1') }, false);
-            //vm.addEventListener('build', function (e) { console.log(e.detail + ' 2') }, false);
-            //vm.addEventListener('build', function (e) { console.log(e.detail + ' 3') }, false);
-            //vm.addEventListener('build', function (e) { console.log(e.detail + ' 4') }, false);
-
-            //vm.dispatchEvent(event);
 
             vm.title = 'homeCtrl';
             vm.data = [
@@ -34,25 +21,25 @@
             // Free Hub
             vm.freeMessage = "Free client text";
             vm.sendFreeMessage = function () {
-                TemplateHub.hub.SendFreeMessage(vm.freeMessage);
+                TemplateConnection.hub.SendFreeMessage(vm.freeMessage);
             };
-            TemplateHub.sendFreeMessage = function (data) {
+            TemplateConnection.sendFreeMessage = function (data) {
                 vm.freeMessage = data;
             };
 
             vm.protMessage = "Protected client text";
             vm.sendProtectedMessage = function () {
-                var req = TemplateHub.hub.SendProtMessage(vm.protMessage);
+                TemplateConnection.hub.SendProtMessage(vm.protMessage);
             };            
-            TemplateHub.sendProtectedMessage = function (data) {
+            TemplateConnection.sendProtectedMessage = function (data) {
                 vm.protMessage = data;
             };
 
             vm.adminMessage = "Admin client text";
             vm.sendAdminMessage = function (){
-                TemplateHub.hub.SendAdminMessage(vm.adminMessage);
+                TemplateConnection.hub.SendAdminMessage(vm.adminMessage);
             }
-            TemplateHub.sendAdminMessage = function (data) {
+            TemplateConnection.sendAdminMessage = function (data) {
                 vm.adminMessage = data;
             };
             ///////////////////////////////////////////////
@@ -60,74 +47,96 @@
             // Prot Hub
             vm.freePrMessage = "Free client text";
             vm.sendPrFreeMessage = function () {
-                TemplateHub.protHub.SendFreeMessage(vm.freePrMessage);
+                TemplateConnection.protHub.SendFreeMessage(vm.freePrMessage);
             };
-            TemplateHub.sendPrFreeMessage = function (data) {
+            TemplateConnection.sendPrFreeMessage = function (data) {
                 vm.freePrMessage = data;
             };
 
             vm.protPrMessage = "Protected client text";
             vm.sendPrProtectedMessage = function () {
-                var req = TemplateHub.protHub.SendProtMessage(vm.protPrMessage);
+                var req = TemplateConnection.protHub.SendProtMessage(vm.protPrMessage);
             };
-            TemplateHub.sendPrProtectedMessage = function (data) {
+            TemplateConnection.sendPrProtectedMessage = function (data) {
                 vm.protPrMessage = data;
             };
 
             vm.adminPrMessage = "Admin client text";
             vm.sendPrAdminMessage = function () {
-                TemplateHub.protHub.SendAdminMessage(vm.adminPrMessage);
+                TemplateConnection.protHub.SendAdminMessage(vm.adminPrMessage);
             }
-            TemplateHub.sendPrAdminMessage = function (data) {
+            TemplateConnection.sendPrAdminMessage = function (data) {
                 vm.adminPrMessage = data;
             };
             ////////////////////////////////////////////////////
 
 
-           
+            // Free Hub
             vm.connectHub = function () {
-                TemplateHub.hub.connect();
+                TemplateConnection.hub.connect();
             };
             vm.disconnectHub = function () {
-                TemplateHub.hub.disconnect();             
+                TemplateConnection.hub.disconnect();
             };
 
-            vm.connectPrHub = function () {
-                TemplateHub.protHub.connect();
-            };
-            vm.disconnectPrHub = function () {
-                TemplateHub.protHub.disconnect();
-            };
-
+          
+            // notificated
             vm.changeToken = function () {
-                TemplateHub.changeQueryToken();
+                TemplateConnection.changeToken();
             };
             vm.changeOnUserToken = function () {
-                TemplateHub.changeOnUserQueryToken();
+                TemplateConnection.changeOnUserToken();
             };
             vm.changeOnBadToken = function () {
-                TemplateHub.changeOnBadQueryToken();
+                TemplateConnection.changeOnBadToken();
             };           
-            vm.clearQueryToken = function () {
-                TemplateHub.clearQueryToken();
-                
+            vm.clearToken = function () {
+                TemplateConnection.clearToken();                
+            };
+            vm.rejectToken = function () {
+                TemplateConnection.rejectToken();
             };
 
-            vm.changeConnectionToken = function () {
-                TemplateHub.changeToken();
+            // not notificated
+            vm.changeTokenArt = function () {
+                TemplateConnection.changeTokenArt();
             };
-            vm.changeOnUserConnectionToken = function () {
-                TemplateHub.changeOnUserToken();
+            vm.changeOnUserTokenArt = function () {
+                TemplateConnection.changeOnUserTokenArt();
             };
-            vm.changeOnBadConnectionToken = function () {
-                TemplateHub.changeOnBadToken();
+            vm.changeOnBadTokenArt = function () {
+                TemplateConnection.changeOnBadTokenArt();
             };
-            vm.clearConnectionToken = function () {
-                TemplateHub.clearToken();
-                
+            vm.clearTokenArt = function () {
+                TemplateConnection.clearTokenArt();                
             };
-            
-            //TemplateHub.hub.promise = TemplateHub.hub.connect();
-            //TemplateHub.protHub.promise = TemplateHub.protHub.connect();
+            vm.rejectTokenArt = function () {
+                TemplateConnection.rejectTokenArt();
+            };
+
+            // qs
+            vm.changeQsToken = function () {
+                TemplateConnection.changeQsToken();
+            };
+            vm.changeQsOnUserToken = function () {
+                TemplateConnection.changeQsOnUserToken();
+            };
+            vm.changeQsOnBadToken = function () {
+                TemplateConnection.changeQsOnBadToken();
+            };
+            vm.clearQsToken = function () {
+                TemplateConnection.clearQsToken();
+            };
+
+
+            // protected hub
+            vm.connectPrHub = function () {
+                TemplateConnection.protHub.connect();
+            };
+            vm.disconnectPrHub = function () {
+                TemplateConnection.protHub.disconnect();
+            };
+            ///////////////
+           
         }]);  
 })();

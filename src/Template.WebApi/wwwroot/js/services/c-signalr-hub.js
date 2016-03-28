@@ -91,7 +91,7 @@
                     connection.forbiddenHandler = options.securityTokenOptions.forbiddenHandler;
 
                     // must disconnect, ask token, set new token , and reconnect
-                    if (connection.tokenChangedLogic) {
+                    if (options.securityTokenOptions.tokenChangedLogic) {
                         connection.tokenChangedLogic = function () {
                             return $q.when(options.securityTokenOptions.tokenChangedLogic());
                         }
@@ -100,7 +100,7 @@
                                 return connection.tokenChangedLogic();
                         }
                     }
-                    if (connection.unAuthHandler || connection.forbiddenHandler) {
+                    if (options.securityTokenOptions.unAuthHandler || options.securityTokenOptions.forbiddenHandler) {
                         connection.error(function (error, data) {
                             if (error.context.status === 401
                                 && connection.unAuthHandler) {
@@ -142,8 +142,18 @@
                 Connection.getConnectionToken = function () {
                     return connection.getConnectionToken();
                 }
+                if (connection.tokenChangedEventHandler)
+                {
+                    Connection.tokenChangedEventHandler = function () {
+                        return connection.tokenChangedEventHandler();
+                    }
+                    Connection.tokenChangedLogic = function () {
+                        return connection.tokenChangedLogic();
+                    }
+
+                }
                
-                Connection.setTokenAndStart = function (token)
+                Connection.setTokenAndStart = function (token, startOptions)
                 {
                     if (connection.setConnectionToken)
                         connection.setConnectionToken(token);
@@ -162,9 +172,11 @@
                     if (connection.getToken) {
                         connection.tokenChangedEventBlocked = true;
                         return connection.getToken().then(function (token) {
-                            return Connection.setTokenAndStart(token);
+                            return Connection.setTokenAndStart(token, startOptions);
                         }, function (err) {
-                            return Connection.setTokenAndStart(null);
+                            console.log('Bad token during connection');
+                            connection.tokenChangedEventBlocked = false;
+                            return $q.reject(err);
                         });
                     }
                     else {
@@ -177,8 +189,9 @@
                 }
 
                 if (connectionOptions && connectionOptions.hubs && connectionOptions.hubs.length) {
-                    for (var i = 0; i < hubs.lenghts; i++) {
-                        Connection.hubs.push(new Hub(this, hubs[i].hubName, hubs[i].options));
+                    Connection.hubs = {};
+                    for (var i = 0; i < connectionOptions.hubs.length; i++) {
+                        Connection.hubs[connectionOptions.hubs[i].hubName] = new Hub(this, connectionOptions.hubs[i].hubName, connectionOptions.hubs[i].options);
                     }
                 }
 
@@ -191,9 +204,8 @@
                 return Connection;
 
             }
-
-            // listeners
-            function Hub(Connection,hubName,options) {
+           
+            function Hub(Connection, hubName, options) {
                 var Hub = this;
                 Hub.connection = Connection;
 
@@ -266,13 +278,13 @@
                 if (options && options.methods) {
                     angular.forEach(options.methods, function (method) {
                         Hub[method] = function () {
+
                             var args = $.makeArray(arguments);
                             args.unshift(method);
 
-                            //var callPromise;
                             if (Hub.checkSecurityOptions()) {
-                                Hub.Connection.tokenChangedEventBlocked = true;
-                                return Connection.getToken.then(function (newToken) {
+                                Connection.connection.tokenChangedEventBlocked = true;
+                                return Connection.getToken().then(function (newToken) {
                                     // check by my self and cast token logic if needed
                                     var oldToken = null;
                                     oldToken = Connection.getConnectionToken();
@@ -286,9 +298,15 @@
                                         return newToken;
                                     
                                     
+                                }, function (err) {
+                                    Connection.connection.tokenChangedEventBlocked = false;
+                                    Connection.disconnect();
+                                    return $q.reject(err);
                                 }).then(function (data) {
-                                    Hub.Connection.tokenChangedEventBlocked = false;
+                                    Connection.connection.tokenChangedEventBlocked = false;
                                     return Hub.secureInvoke(Hub, args);
+                                }).catch(function (err) {
+                                    Connection.connection.tokenChangedEventBlocked = false;
                                 });
                             }
                             else
