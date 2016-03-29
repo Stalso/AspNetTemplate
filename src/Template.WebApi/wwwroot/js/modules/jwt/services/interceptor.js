@@ -54,7 +54,6 @@
                                 request.headers[config.authHeader] = config.authPrefix + token;
                             }
                         }
-                        //console.log('token');
                         return request;
                     }, function (err) {
                         console.log('token promise: error' + err);

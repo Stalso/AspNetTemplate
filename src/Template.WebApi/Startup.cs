@@ -243,7 +243,7 @@ namespace Template.WebApi
                 options.AccessTokenLifetime = new TimeSpan(10, 10, 10, 10);
 
                 //options.IdentityTokenLifetime = new TimeSpan(0, 0, 3);
-                //options.RefreshTokenLifetime = new TimeSpan(0, 0, 5);
+                //options.RefreshTokenLifetime = new TimeSpan(0, 0, 3);
 
                 // Note: by default, tokens are signed using dynamically-generated
                 // RSA keys but you can also use your own certificate:

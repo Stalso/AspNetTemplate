@@ -130,6 +130,10 @@
                     connection.stop();
                 };
 
+                Connection.state = function () {
+                    return connection.state;
+                }
+
                 Connection.checkSecurityOptions = function () {
                     return connection.getToken
                         && connection.getConnectionToken

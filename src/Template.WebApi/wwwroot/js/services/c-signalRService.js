@@ -21,10 +21,10 @@
                         if (getHub500Reconnect()) {
                             setHub500Reconnect(false);
                             //real
-                            //this.getToken();
+                            this.getToken();
 
                             //good
-                            changeToken();
+                            //changeToken();
 
                             //bad
                             //changeOnBadToken();
@@ -62,13 +62,17 @@
 
                     getToken: function () {
                         // real
-                        //var res = Auth.getAccessTokenWithRefresh().then(function (token) { return token }, function (err) { return null});
+                        var res = Auth.getAccessTokenWithRefresh().then(function (token) {
+                            return token
+                        }, function (err) {
+                            return null;
+                        });
 
                         //expired
                         //return $q.when(bad_token);
 
                         //valid admin
-                        var res = $q.when(admin_token);
+                        //var res = $q.when(admin_token);
 
                         //valid user
                         //var res = $q.when(user_token);
@@ -244,9 +248,15 @@
                 }]
             });
 
-            $rootScope.$on("test_access_token changed", function (userInfo) {
-                console.log('test_access_token changed event');
-                hubConnection.tokenChangedEventHandler();
+            //$rootScope.$on("test_access_token changed", function (userInfo) {
+            //    console.log('test_access_token changed event');
+            //    hubConnection.tokenChangedEventHandler();
+
+            //});
+            $rootScope.$on("access_token changed", function (userInfo) {
+                console.log('access_token changed event');
+                if(hubConnection.state() === 1)
+                    hubConnection.tokenChangedEventHandler();
 
             });
             hubConnection.reconnectOn500 = true;

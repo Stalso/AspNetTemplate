@@ -49,21 +49,18 @@
     }).run(["$rootScope", "$location", 'Auth', function ($rootScope, $location, Auth, $root) {
         $rootScope.$on("unauthenticated", function (userInfo) {
             console.log('unauthenticated event');
-            var url = $location.url();
-           
+            var url = $location.url();           
            
             $rootScope.$apply(function () {
                 $location.path("/login").search({ 'returnUrl': url });
             });
-            //$rootScope.$apply();
+            
         });
         $rootScope.$on("forbidden", function (userInfo) {
 
-            //var url = $location.url();
             $rootScope.$apply(function () {
                 $location.path("/forbidden");
-            });
-            //$location.path("/forbidden");
+            });            
         });
        
         $rootScope.$on('LocalStorageModule.notification.setitem', function (scope,data) {

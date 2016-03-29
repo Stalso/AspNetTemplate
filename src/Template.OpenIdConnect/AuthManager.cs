@@ -268,7 +268,7 @@ namespace Template.OpenIdConnect
             }
             catch (Exception ex)
             {
-
+                return false;
             }
 
             return true;
