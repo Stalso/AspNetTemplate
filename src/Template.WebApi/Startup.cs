@@ -173,48 +173,6 @@ namespace Template.WebApi
                 });
             });
 
-
-            //app.UseJwtBearerAuthentication(options =>
-            //{
-
-            //    options.AutomaticAuthenticate = true;
-            //    options.AutomaticChallenge = true;
-            //    options.RequireHttpsMetadata = false;
-            //    // Thisi is test, if I uncomment this and SetResource in AuthorizationProvider everything works in postman
-            //    //options.Audience = "http://localhost:10450/";
-            //    // My Angular client
-            //    //options.Audience = "http://localhost:10377";
-            //    options.TokenValidationParameters.ValidAudiences = new[] { "http://localhost:10450/", "http://localhost:10377/" };
-            //    //options.
-            //    // My Api
-            //    options.Authority = "http://localhost:10450/";
-            //    options.TokenValidationParameters.ValidateLifetime = true;
-
-            //    //options.TokenValidationParameters.
-            //    options.Events = new JwtBearerEvents()
-            //    {
-            //        OnReceivingToken = context1 => {
-            //            //return Task.FromResult(true);
-            //            // Note: when the token is missing from the query string,
-            //            // context.Token is null and the JWT bearer middleware will
-            //            // automatically try to retrieve it from the Authorization header.
-            //            var isSignalR = context1.HttpContext.Request.Path.ToString().StartsWith("/signalr");
-            //            if (isSignalR)
-            //            {
-            //                context1.Token = context1.Request.Query["access_token"];
-            //            }
-
-            //            return Task.FromResult(0);
-            //        }
-
-            //    };
-
-
-            //});
-
-
-
-
             // Note: visit https://docs.nwebsec.com/en/4.2/nwebsec/Configuring-csp.html for more information.
             app.UseCsp(options => options.DefaultSources(configuration => configuration.Self())
                                          .ImageSources(configuration => configuration.Self().CustomSources("data:"))
@@ -240,7 +198,7 @@ namespace Template.WebApi
                 //options.AuthorizationEndpointPath = "/auth";
                 //options.ProfileEndpointPath = "/prof";
                 options.TokenEndpointPath = "/token";
-                options.AccessTokenLifetime = new TimeSpan(10, 10, 10, 10);
+                //options.AccessTokenLifetime = new TimeSpan(10, 10, 10, 10);
 
                 //options.IdentityTokenLifetime = new TimeSpan(0, 0, 3);
                 //options.RefreshTokenLifetime = new TimeSpan(0, 0, 3);
