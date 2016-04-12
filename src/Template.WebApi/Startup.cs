@@ -97,6 +97,7 @@ namespace Template.WebApi
             services.AddSignalR();
             services.AddMvc(options =>
             {
+                // for CEf client
                 var jsonOutputFormatter = new JsonOutputFormatter();
                 jsonOutputFormatter.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
 

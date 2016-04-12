@@ -7,6 +7,7 @@ using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
 using Template.Domain.Entities;
 using Template.OpenIdConnect.EntityFramework;
+using Template.OpenIdConnect;
 
 namespace Template.WebApi.Models
 {
@@ -77,7 +78,7 @@ namespace Template.WebApi.Models
     //}
     public class ApplicationDbContext<TUser, TApplication, TRole, TKey> : OpenIdConnectDbContext<TUser, TApplication, TRole, TKey>
        where TUser : IdentityUser<TKey>
-       where TApplication : Application
+       where TApplication : IdentityApplication<TKey>
        where TRole : IdentityRole<TKey>
        where TKey : IEquatable<TKey>
     {

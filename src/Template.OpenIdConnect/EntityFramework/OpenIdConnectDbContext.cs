@@ -8,6 +8,29 @@ using Microsoft.Data.Entity;
 
 namespace Template.OpenIdConnect.EntityFramework
 {
+
+
+    /// <summary>
+    /// Base class for the Entity Framework database context used for identity.
+    /// </summary>
+    public class OpenIdConnectDbContext : OpenIdConnectDbContext<IdentityUser, IdentityApplication ,IdentityRole, string> { }
+
+
+
+    /// <summary>
+    /// Base class for the Entity Framework database context used for identity.
+    /// </summary>
+    /// <typeparam name="TUser">The type of the user objects.</typeparam>
+    public class OpenIdConnectDbContext<TUser> : OpenIdConnectDbContext<TUser, IdentityApplication, IdentityRole, string> where TUser : IdentityUser
+    { }
+
+    /// <summary>
+    /// Base class for the Entity Framework database context used for identity.
+    /// </summary>
+    /// <typeparam name="TUser">The type of the user objects.</typeparam>
+    public class OpenIdConnectDbContext<TUser, TApplication> : OpenIdConnectDbContext<TUser, TApplication, IdentityRole, string> where TUser : IdentityUser where TApplication : IdentityApplication
+    { }
+
     /// <summary>
     /// Native repository
     /// </summary>
@@ -18,12 +41,12 @@ namespace Template.OpenIdConnect.EntityFramework
     public class OpenIdConnectDbContext<TUser, TApplication, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey>
         where TUser : IdentityUser<TKey>
         //where TApplication : Application
-        where TApplication : class
+        where TApplication : IdentityApplication<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
     {
         public OpenIdConnectDbContext() { }
-
+        
         public OpenIdConnectDbContext(DbContextOptions options)
             : base(options)
         { }
@@ -36,8 +59,7 @@ namespace Template.OpenIdConnect.EntityFramework
             : base(services, options)
         { }
 
-        public DbSet<TApplication> Applications { get; set; }
-        //TODO remove testData
-        //public DbSet<SampleEntity<string>> SampleEntities { get; set; }
+        public DbSet<IdentityApplication<TKey>> Applications { get; set; }
+       
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,51 @@ using System.Threading.Tasks;
 
 namespace Template.OpenIdConnect.EntityFramework
 {
+    /// <summary>
+    /// Creates a new instance of a persistence store for users, using the default implementation
+    /// of <see cref="IdentityUser{TKey}"/> with a string as a primary key.
+    /// </summary>
+    public class AuthStore : AuthStore<IdentityUser<string>>
+    {
+        public AuthStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+    }
+
+    /// <summary>
+    /// Creates a new instance of a persistence store for the specified user type.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
+    public class AuthStore<TUser> : AuthStore<TUser,IdentityApplication, IdentityRole, DbContext>
+        where TUser : IdentityUser<string>, new()
+    {
+        public AuthStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+    }
+
+    /// <summary>
+    /// Creates a new instance of a persistence store for the specified user type.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
+    public class AuthStore<TUser, TApplication> : AuthStore<TUser, TApplication, IdentityRole, DbContext>
+        where TUser : IdentityUser<string>, new()
+        where TApplication : IdentityApplication<string>, new()
+    {
+        public AuthStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+    }
+
+    /// <summary>
+    /// Creates a new instance of a persistence store for the specified user and role types.
+    /// </summary>
+    /// <typeparam name="TUser">The type representing a user.</typeparam>
+    /// <typeparam name="TRole">The type representing a role.</typeparam>
+    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
+    public class AuthStore<TUser, TApplication, TRole, TContext> : AuthStore<TUser, TApplication, TRole, TContext, string>
+        where TUser : IdentityUser<string>, new()
+        where TApplication : IdentityApplication<string>
+        where TRole : IdentityRole<string>, new()
+        where TContext : DbContext
+    {
+        public AuthStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
+    }
+
     public class AuthStore<TUser, TApplication, TRole, TContext, TKey> : UserStore<TUser, TRole, TContext, TKey>, IAuthStore<TUser, TApplication>
        where TUser : IdentityUser<TKey>
        where TApplication : IdentityApplication<TKey>
@@ -15,8 +61,8 @@ namespace Template.OpenIdConnect.EntityFramework
        where TContext : DbContext
        where TKey : IEquatable<TKey>
     {
-        public AuthStore(TContext context)
-            : base(context)
+        public AuthStore(TContext context, IdentityErrorDescriber describer = null)
+            : base(context, describer)
         {
         }
 

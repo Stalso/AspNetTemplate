@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace Template.OpenIdConnect
 {
+    public class IdentityApplication : IdentityApplication<string>
+    {
+
+    }
     public class IdentityApplication<TKey> where TKey : IEquatable<TKey>
     {
         public virtual TKey Id { get; set; }

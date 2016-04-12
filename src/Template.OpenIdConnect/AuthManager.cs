@@ -58,7 +58,6 @@ namespace Template.OpenIdConnect
         {
             get { return base.Store as IAuthStore<TUser, TApplication>; }
         }
-
         public virtual async Task<ClaimsIdentity> CreateIdentityAsync(TUser user, IEnumerable<string> scopes)
         {
             if (user == null)
@@ -133,17 +132,14 @@ namespace Template.OpenIdConnect
 
             return identity;
         }
-
         public virtual Task<TApplication> FindApplicationByIdAsync(string identifier)
         {
             return Store.FindApplicationByIdAsync(identifier, CancellationToken);
         }
-
         public virtual Task<TApplication> FindApplicationByLogoutRedirectUri(string url)
         {
             return Store.FindApplicationByLogoutRedirectUri(url, CancellationToken);
         }
-
         public virtual async Task<string> FindClaimAsync(TUser user, string type)
         {
             if (user == null)
@@ -163,7 +159,6 @@ namespace Template.OpenIdConnect
                     where string.Equals(claim.Type, type, StringComparison.Ordinal)
                     select claim.Value).FirstOrDefault();
         }
-
         public virtual async Task<string> GetApplicationTypeAsync(TApplication application)
         {
             if (application == null)
@@ -183,7 +178,6 @@ namespace Template.OpenIdConnect
 
             return type;
         }
-
         public virtual Task<string> GetDisplayNameAsync(TApplication application)
         {
             if (application == null)
@@ -193,7 +187,6 @@ namespace Template.OpenIdConnect
 
             return Store.GetDisplayNameAsync(application, CancellationToken);
         }
-
         public virtual async Task<bool> ValidateRedirectUriAsync(TApplication application, string address)
         {
             if (application == null)
@@ -273,7 +266,6 @@ namespace Template.OpenIdConnect
 
             return true;
         }
-
         public virtual Task<string> GetApplicationRedirectUri(TApplication application)
         {
             return Store.GetRedirectUriAsync(application, CancellationToken);
