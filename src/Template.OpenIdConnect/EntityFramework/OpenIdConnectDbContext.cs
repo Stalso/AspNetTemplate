@@ -59,7 +59,7 @@ namespace Template.OpenIdConnect.EntityFramework
             : base(services, options)
         { }
 
-        public DbSet<IdentityApplication<TKey>> Applications { get; set; }
+        public DbSet<TApplication> Applications { get; set; }
        
     }
 }
